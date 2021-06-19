@@ -7,7 +7,7 @@
 #include "Helpers.h"
 
 
-static bool renameElement(size_t fIndex, size_t iIndex)
+bool renameElement(size_t fIndex, size_t iIndex)
 {
 	std::string name;
 
@@ -38,7 +38,7 @@ static bool renameElement(size_t fIndex, size_t iIndex)
 	return true;
 }
 
-static bool renameComponent(size_t fIndex, size_t iIndex, size_t cIndex)
+bool renameComponent(size_t fIndex, size_t iIndex, size_t cIndex)
 {
 	std::string name;
 
