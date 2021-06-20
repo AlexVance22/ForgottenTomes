@@ -7,12 +7,6 @@
 #include "Helpers.h"
 
 
-static bool listElement()
-{
-	return true;
-}
-
-
 static void viewElement(int fIndex, int iIndex)
 {
 	const Element& e = File::Get().elements[fIndex][iIndex];

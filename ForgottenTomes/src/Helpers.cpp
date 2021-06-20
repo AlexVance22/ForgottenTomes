@@ -3,6 +3,19 @@
 #include "Helpers.h"
 
 
+static bool getSelected(ItemLocation& loc)
+{
+	if (File::Selected().folderIndex != -1 && File::Selected().elementIndex != -1)
+	{
+		loc = File::Selected();
+		return true;
+	}
+	
+	std::cout << "---\nERROR: no item selected\n---\n";
+	return false;
+}
+
+
 bool findItem(ItemLocation& loc, const std::vector<int>& command, size_t startIndex)
 {
 	bool current = false;;
@@ -10,33 +23,20 @@ bool findItem(ItemLocation& loc, const std::vector<int>& command, size_t startIn
 	switch ((ARG)command[startIndex])
 	{
 	case ARG::CRN:
-		if (File::Selected().folderIndex != -1 && File::Selected().elementIndex != -1)
-		{
-			loc = File::Selected();
+		if (getSelected(loc))
 			current = true;
-		}
 		else
-		{
-			std::cout << "---\nERROR: no item selected\n---\n";
 			return false;
-		}
+
 		break;
 
-	case ARG::SES:
-		loc.folderIndex = 0;
-		loc.elementIndex = command[startIndex + 1];
+	case ARG::SES: loc.folderIndex = 0;
 		break;
-	case ARG::LOC:
-		loc.folderIndex = 1;
-		loc.elementIndex = command[startIndex + 1];
+	case ARG::LOC: loc.folderIndex = 1;
 		break;
-	case ARG::CHA:
-		loc.folderIndex = 2;
-		loc.elementIndex = command[startIndex + 1];
+	case ARG::CHA: loc.folderIndex = 2;
 		break;
-	case ARG::ITM:
-		loc.folderIndex = 3;
-		loc.elementIndex = command[startIndex + 1];
+	case ARG::ITM: loc.folderIndex = 3;
 		break;
 
 	default:
@@ -44,8 +44,24 @@ bool findItem(ItemLocation& loc, const std::vector<int>& command, size_t startIn
 		return false;
 	}
 
+	if (command[startIndex + 1] < File::Get().elements[loc.folderIndex].size())
+		loc.elementIndex = command[startIndex + 1];
+	else
+	{
+		std::cout << "---\nERROR: invalid item index\n---\n";
+		return false;
+	}
+
 	if (command.size() == startIndex + 4 - current && (ARG)command[startIndex + 2 - current] == ARG::CMP)
-		loc.componentIndex = command[startIndex + 3 - current];
+	{
+		if (command[startIndex + 3 - current] < File::Get().elements[loc.folderIndex][loc.elementIndex].content.size())
+			loc.componentIndex = command[startIndex + 3 - current];
+		else
+		{
+			std::cout << "---\nERROR: invalid article index\n---\n";
+			return false;
+		}
+	}
 
 	return true;
 }

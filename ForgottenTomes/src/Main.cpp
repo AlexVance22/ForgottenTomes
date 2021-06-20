@@ -152,6 +152,8 @@ int main()
 		{
 		case CMD::CRT: case CMD::OPN: case CMD::HLP:
 			break;
+		case CMD::EXT:
+			return 0;
 		default:
 			if (File::Get().dir == "")
 			{

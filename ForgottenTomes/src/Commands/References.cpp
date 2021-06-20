@@ -87,17 +87,13 @@ bool cmdLookup(const std::vector<int>& command)
 
 	switch (loc.folderIndex)
 	{
-	case 0:
-		path += "\\sessions\\";
+	case 0: path += "\\sessions\\";
 		break;
-	case 1:
-		path += "\\locations\\";
+	case 1: path += "\\locations\\";
 		break;
-	case 2:
-		path += "\\characters\\";
+	case 2: path += "\\characters\\";
 		break;
-	case 3:
-		path += "\\items\\";
+	case 3: path += "\\items\\";
 		break;
 	}
 
@@ -119,6 +115,8 @@ bool cmdLookup(const std::vector<int>& command)
 		else
 			std::cout << i << ": " << refTokens[i] << " -> unimplemented element\n";
 	}
+
+	std::cout << "\nEnter 'exit' to cancel\n";
 
 	while (true)
 	{
