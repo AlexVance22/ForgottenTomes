@@ -14,7 +14,7 @@ void save()
 
 bool cmdCreate()
 {
-	std::string dir = saveFileName("", GetConsoleWindow());
+	std::string dir = saveFileName("");
 
 	std::filesystem::create_directories(dir);
 
@@ -41,7 +41,7 @@ bool cmdCreate()
 
 bool cmdOpen()
 {
-	std::string dir = openFileName("tome files (*.ft)\0*.ft\0", GetConsoleWindow());
+	std::string dir = openFileName("tome files (*.ft)\0*.ft\0");
 
 	File::Get().reset();
 	if (!File::Get().load(dir))

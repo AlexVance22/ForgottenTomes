@@ -1,11 +1,7 @@
 workspace "ForgottenTomes"
-   configurations { "Debug32", "Release32", "Debug64", "Release64" }
+	architecture "x86"
 
-   filter "configurations:*32"
-      architecture "x86"
-
-   filter "configurations:*64"
-      architecture "x86_64"
+	configurations { "Debug", "Release" }
 
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 

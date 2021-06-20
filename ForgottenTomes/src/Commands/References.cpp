@@ -1,6 +1,8 @@
 #include "PCH.h"
 #include "References.h"
 
+#include "CoreMacros.h"
+
 #include "Files/File.h"
 #include "Helpers.h"
 #include "Utilities.h"
@@ -113,7 +115,7 @@ bool cmdLookup(const std::vector<int>& command)
 		if (it != refLocs.end())
 			std::cout << i << ": " << it->first << '\n';
 		else
-			std::cout << i << ": " << refTokens[i] << " -> unimplemented element\n";
+			std::cout << i << ": " << refTokens[i] << C_YELLOW << " -> unimplemented element\n" << C_RESET;
 	}
 
 	std::cout << "\nEnter 'exit' to cancel\n";

@@ -15,24 +15,20 @@ static void viewElement(int fIndex, int iIndex)
 
 	for (size_t i = 0; i < e.content.size(); i++)
 	{
-		std::cout << "---------\n";
+		std::cout << "------------\n";
 
 		std::cout << i << " - " << e.content[i] << ":" << "\n\n";
 		std::string path = File::Get().path;
 
 		switch (fIndex)
 		{
-		case 0:
-			path += "\\sessions\\";
+		case 0: path += "\\sessions\\";
 			break;
-		case 1:
-			path += "\\locations\\";
+		case 1: path += "\\locations\\";
 			break;
-		case 2:
-			path += "\\characters\\";
+		case 2: path += "\\characters\\";
 			break;
-		case 3:
-			path += "\\items\\";
+		case 3: path += "\\items\\";
 			break;
 		}
 
@@ -88,7 +84,9 @@ bool cmdSelect(const std::vector<int>& command)
 
 	File::Selected() = loc;
 
-	cmdView({ 0, (int)ARG::CRN, 1 });
+	viewElement(loc.folderIndex, loc.elementIndex);
+
+	std::cout << "-------------------------------------------\n" << std::endl;
 
 	return true;
 }
@@ -100,9 +98,9 @@ bool cmdView(const std::vector<int>& command)
 		return false;
 
 	if (loc.componentIndex != -2)
-		viewComponent(loc.folderIndex, loc.elementIndex, loc.componentIndex);
-	else
 		viewElement(loc.folderIndex, loc.elementIndex);
+	else
+		viewComponent(loc.folderIndex, loc.elementIndex, loc.componentIndex);
 
 	std::cout << "-------------------------------------------\n" << std::endl;
 

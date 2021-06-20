@@ -9,6 +9,8 @@
 #include <vector>
 #include <string>
 
-#include <windows.h>
+#ifdef FTOMES_PLATFORM_WINDOWS
+	#include <windows.h>
+#endif
 
 #include <json.hpp>

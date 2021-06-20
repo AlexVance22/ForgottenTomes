@@ -3,7 +3,9 @@
 #include "Dialogs.h"
 
 
-std::string openFileName(const char* filter, HWND handle)
+#ifdef FTOMES_PLATFORM_WINDOWS
+
+std::string openFileName(const char* filter)
 {
 	OPENFILENAMEA ofn;
 	CHAR szFile[260] = { 0 };
@@ -11,7 +13,7 @@ std::string openFileName(const char* filter, HWND handle)
 	ZeroMemory(&ofn, sizeof(OPENFILENAMEA));
 
 	ofn.lStructSize = sizeof(OPENFILENAMEA);
-	ofn.hwndOwner = handle;
+	ofn.hwndOwner = GetConsoleWindow();
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
 	ofn.lpstrFilter = filter;
@@ -19,13 +21,12 @@ std::string openFileName(const char* filter, HWND handle)
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
 	if (GetOpenFileNameA(&ofn) == TRUE)
-	{
 		return ofn.lpstrFile;
-	}
-	return std::string();
+
+	return "";
 }
 
-std::string saveFileName(const char* filter, HWND handle)
+std::string saveFileName(const char* filter)
 {
 	OPENFILENAMEA ofn;
 	CHAR szFile[260] = { 0 };
@@ -33,7 +34,7 @@ std::string saveFileName(const char* filter, HWND handle)
 	ZeroMemory(&ofn, sizeof(OPENFILENAMEA));
 
 	ofn.lStructSize = sizeof(OPENFILENAMEA);
-	ofn.hwndOwner = handle;
+	ofn.hwndOwner = GetConsoleWindow();
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
 	ofn.lpstrFilter = filter;
@@ -41,8 +42,25 @@ std::string saveFileName(const char* filter, HWND handle)
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
 	if (GetSaveFileNameA(&ofn) == TRUE)
-	{
 		return ofn.lpstrFile;
-	}
-	return std::string();
+
+	return "";
 }
+
+#endif
+
+
+#ifdef FTOMES_PLATFORM_MAC
+
+std::string openFileName(const char* filter)
+{
+	return "";
+}
+
+std::string saveFileName(const char* filter)
+{
+	return "";
+}
+
+
+#endif

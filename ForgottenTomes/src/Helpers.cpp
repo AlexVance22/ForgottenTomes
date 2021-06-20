@@ -1,5 +1,7 @@
 #include "PCH.h"
 
+#include "CoreMacros.h"
+
 #include "Helpers.h"
 
 
@@ -11,7 +13,8 @@ static bool getSelected(ItemLocation& loc)
 		return true;
 	}
 	
-	std::cout << "---\nERROR: no item selected\n---\n";
+	LOG_ERROR("no item selected");
+
 	return false;
 }
 
@@ -40,25 +43,28 @@ bool findItem(ItemLocation& loc, const std::vector<int>& command, size_t startIn
 		break;
 
 	default:
-		std::cout << "---\nERROR: invalid item type\n---\n";
+		LOG_ERROR("invalid item type");
 		return false;
 	}
 
-	if ((size_t)command[startIndex + 1] < File::Get().elements[loc.folderIndex].size())
-		loc.elementIndex = command[startIndex + 1];
-	else
+	if (!current)
 	{
-		std::cout << "---\nERROR: invalid item index\n---\n";
-		return false;
+		if (command[startIndex] < (int)File::Get().elements[loc.folderIndex].size())
+			loc.elementIndex = command[startIndex + 1];
+		else
+		{
+			LOG_ERROR("invalid item index");
+			return false;
+		}
 	}
 
 	if (command.size() == startIndex + 4 - current && (ARG)command[startIndex + 2 - current] == ARG::CMP)
 	{
-		if ((size_t)command[startIndex + 3 - current] < File::Get().elements[loc.folderIndex][loc.elementIndex].content.size())
+		if (command[startIndex + 3 - current] < (int)File::Get().elements[loc.folderIndex][loc.elementIndex].content.size())
 			loc.componentIndex = command[startIndex + 3 - current];
 		else
 		{
-			std::cout << "---\nERROR: invalid article index\n---\n";
+			LOG_ERROR("invalid article index");
 			return false;
 		}
 	}
@@ -83,6 +89,8 @@ bool listElements(ARG code)
 {
 	int group;
 
+	std::cout << C_CYAN;
+
 	switch (code)
 	{
 	case ARG::SES:
@@ -102,13 +110,14 @@ bool listElements(ARG code)
 		group = 3;
 		break;
 	default:
+		std::cout << C_RESET;
 		return false;
 	}
 
 	for (size_t i = 0; i < File::Get().elements[group].size(); i++)
 		std::cout << i << ": " << File::Get().elements[group][i].name << std::endl;
 
-	std::cout << "\n------------------------------------------\n\n";
+	std::cout << "\n------------------------------------------\n\n" << C_RESET;
 
 	return true;
 }
