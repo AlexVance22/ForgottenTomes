@@ -1,6 +1,8 @@
 #include "PCH.h"
-
 #include "ElementStorage.h"
+
+#include "CoreMacros.h"
+
 #include "Editing.h"
 
 #include "Files/File.h"
@@ -12,30 +14,11 @@ static void addComp(size_t fIndex, int iIndex, int cIndex, bool doBrief = false)
 {
 	std::string path = File::Get().path;
 
-	switch (fIndex)
-	{
-	case 0:
-		path += "\\sessions\\";
-		break;
-	case 1:
-		path += "\\locations\\";
-		break;
-	case 2:
-		path += "\\characters\\";
-		break;
-	case 3:
-		path += "\\items\\";
-		break;
-	}
-
-	std::string name;
+	appendCategory(path, fIndex);
 
 	Element& e = File::Get().elements[fIndex][iIndex];
 
-	if (doBrief)
-		name = "Brief";
-	else
-		name = "New Element" + std::to_string(e.content.size());
+	std::string name = doBrief ? "Brief" : "New Element" + std::to_string(e.content.size());
 
 	if (cIndex == -1)
 	{
@@ -55,21 +38,7 @@ static void delComp(size_t fIndex, int iIndex, int cIndex)
 {
 	std::string path = File::Get().path;
 
-	switch (fIndex)
-	{
-	case 0:
-		path += "\\sessions\\";
-		break;
-	case 1:
-		path += "\\locations\\";
-		break;
-	case 2:
-		path += "\\characters\\";
-		break;
-	case 3:
-		path += "\\items\\";
-		break;
-	}
+	appendCategory(path, fIndex);
 
 	Element& e = File::Get().elements[fIndex][iIndex];
 
@@ -92,21 +61,7 @@ static void addElement(size_t fIndex, int iIndex)
 {
 	std::string path = File::Get().path;
 
-	switch (fIndex)
-	{
-	case 0: 
-		path += "\\sessions\\";
-		break;
-	case 1: 
-		path += "\\locations\\";
-		break;
-	case 2:
-		path += "\\characters\\";
-		break;
-	case 3:
-		path += "\\items\\";
-		break;
-	}
+	appendCategory(path, fIndex);
 
 	if (iIndex == -1)
 	{
@@ -129,21 +84,7 @@ static void delElement(size_t fIndex, int iIndex)
 	const auto& e = File::Get().elements[fIndex];
 	std::string path;
 
-	switch (fIndex)
-	{
-	case 0:
-		path += "\\sessions\\";
-		break;
-	case 1:
-		path += "\\locations\\";
-		break;
-	case 2:
-		path += "\\characters\\";
-		break;
-	case 3:
-		path += "\\items\\";
-		break;
-	}
+	appendCategory(path, fIndex);
 
 	if (iIndex == -1)
 	{
@@ -174,7 +115,9 @@ bool cmdAdd(const std::vector<int>& command)
 	else
 		addComp(loc.folderIndex, loc.elementIndex, loc.componentIndex);
 
+	std::cout << C_GREEN;
 	listElements((ARG)command[1]);
+	std::cout << C_RESET;
 
 	return true;
 }
@@ -195,7 +138,9 @@ bool cmdDel(const std::vector<int>& command)
 	else
 		delComp(loc.folderIndex, loc.elementIndex, loc.componentIndex);
 
+	std::cout << C_RED;
 	listElements((ARG)command[1]);
+	std::cout << C_RESET;
 
 	return true;
 }

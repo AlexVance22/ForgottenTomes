@@ -1,6 +1,7 @@
 #include "PCH.h"
-
 #include "Utilities.h"
+
+#include "CoreMacros.h"
 
 #include "Files/File.h"
 #include "CMDenums.h"
@@ -20,17 +21,7 @@ static void viewElement(int fIndex, int iIndex)
 		std::cout << i << " - " << e.content[i] << ":" << "\n\n";
 		std::string path = File::Get().path;
 
-		switch (fIndex)
-		{
-		case 0: path += "\\sessions\\";
-			break;
-		case 1: path += "\\locations\\";
-			break;
-		case 2: path += "\\characters\\";
-			break;
-		case 3: path += "\\items\\";
-			break;
-		}
+		appendCategory(path, fIndex);
 
 		printFile(path + e.name + '\\' + e.content[i] + ".txt");
 	}
@@ -45,21 +36,7 @@ static void viewComponent(int fIndex, int iIndex, int cIndex)
 
 	std::string path = File::Get().path;
 
-	switch (fIndex)
-	{
-	case 0:
-		path += "\\sessions\\";
-		break;
-	case 1:
-		path += "\\locations\\";
-		break;
-	case 2:
-		path += "\\characters\\";
-		break;
-	case 3:
-		path += "\\items\\";
-		break;
-	}
+	appendCategory(path, fIndex);
 
 	printFile(path + e.name + '\\' + e.content[cIndex] + ".txt");
 }
@@ -67,11 +44,14 @@ static void viewComponent(int fIndex, int iIndex, int cIndex)
 
 bool cmdList(const std::vector<int>& command)
 {
+	std::cout << C_CYAN;
+
 	if (!listElements((ARG)command[1]))
 	{
-		std::cout << "---\nERROR: invalid element type\n---" << std::endl;
+		LOG_ERROR("invalid element type");
 		return false;
 	}
+	std::cout << C_RESET;
 
 	return true;
 }
@@ -84,9 +64,9 @@ bool cmdSelect(const std::vector<int>& command)
 
 	File::Selected() = loc;
 
+	std::cout << C_CYAN;
 	viewElement(loc.folderIndex, loc.elementIndex);
-
-	std::cout << "-------------------------------------------\n" << std::endl;
+	std::cout << "-------------------------------------------\n\n" << C_RESET;
 
 	return true;
 }
@@ -97,12 +77,14 @@ bool cmdView(const std::vector<int>& command)
 	if (!findItem(loc, command, 1))
 		return false;
 
-	if (loc.componentIndex != -2)
+	std::cout << C_CYAN;
+
+	if (loc.componentIndex == -2)
 		viewElement(loc.folderIndex, loc.elementIndex);
 	else
 		viewComponent(loc.folderIndex, loc.elementIndex, loc.componentIndex);
 
-	std::cout << "-------------------------------------------\n" << std::endl;
+	std::cout << "-------------------------------------------\n\n" << C_RESET;
 
 	return true;
 }

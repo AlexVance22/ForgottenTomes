@@ -73,6 +73,22 @@ bool findItem(ItemLocation& loc, const std::vector<int>& command, size_t startIn
 }
 
 
+void appendCategory(std::string& base, size_t fIndex)
+{
+	switch (fIndex)
+	{
+	case 0: base += "\\sessions\\";
+		break;
+	case 1: base += "\\locations\\";
+		break;
+	case 2: base += "\\characters\\";
+		break;
+	case 3: base += "\\items\\";
+		break;
+	}
+}
+
+
 void printFile(const std::string& fileName)
 {
 	std::ifstream stream(fileName);
@@ -88,8 +104,6 @@ void printFile(const std::string& fileName)
 bool listElements(ARG code)
 {
 	int group;
-
-	std::cout << C_CYAN;
 
 	switch (code)
 	{
@@ -110,14 +124,13 @@ bool listElements(ARG code)
 		group = 3;
 		break;
 	default:
-		std::cout << C_RESET;
 		return false;
 	}
 
 	for (size_t i = 0; i < File::Get().elements[group].size(); i++)
 		std::cout << i << ": " << File::Get().elements[group][i].name << std::endl;
 
-	std::cout << "\n------------------------------------------\n\n" << C_RESET;
+	std::cout << "\n------------------------------------------\n\n";
 
 	return true;
 }

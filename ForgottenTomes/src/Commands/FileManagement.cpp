@@ -1,6 +1,7 @@
 #include "PCH.h"
-
 #include "FileManagement.h"
+
+#include "CoreMacros.h"
 
 #include "Files/File.h"
 #include "Files/Dialogs.h"
@@ -26,7 +27,7 @@ bool cmdCreate()
 	std::ofstream stream(dir + "/camp.ft");
 	if (!stream.is_open())
 	{
-		std::cout << "---\nERROR: failed to create file at specified location\n---\n";
+		LOG_ERROR("failed to create file at specified location");
 		return false;
 	}
 	stream << "{\"sessions\":[],\"locations\":[],\"characters\":[],\"items\":[]}";
@@ -46,7 +47,7 @@ bool cmdOpen()
 	File::Get().reset();
 	if (!File::Get().load(dir))
 	{
-		std::cout << "---\nERROR: failed to open file at specified location\n---\n";
+		LOG_ERROR("failed to open file at specified location");
 		return false;
 	}
 	return true;

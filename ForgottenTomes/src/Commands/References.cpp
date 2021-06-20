@@ -87,17 +87,7 @@ bool cmdLookup(const std::vector<int>& command)
 
 	std::string path = File::Get().path;
 
-	switch (loc.folderIndex)
-	{
-	case 0: path += "\\sessions\\";
-		break;
-	case 1: path += "\\locations\\";
-		break;
-	case 2: path += "\\characters\\";
-		break;
-	case 3: path += "\\items\\";
-		break;
-	}
+	appendCategory(path, loc.folderIndex);
 
 	path += File::Get().elements[loc.folderIndex][loc.elementIndex].name + '\\' + File::Get().elements[loc.folderIndex][loc.elementIndex].content[loc.componentIndex];
 
@@ -105,8 +95,9 @@ bool cmdLookup(const std::vector<int>& command)
 
 	std::vector<std::pair<std::string, ItemLocation>> refLocs = findRefs(refTokens);
 
+	std::cout << C_CYAN;
 	printFile(path + ".txt");
-	std::cout << '\n';
+	std::cout << C_RESET << '\n';
 
 	for (size_t i = 0; i < refTokens.size(); i++)
 	{

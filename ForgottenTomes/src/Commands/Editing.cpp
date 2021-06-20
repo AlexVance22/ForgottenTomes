@@ -1,6 +1,7 @@
 #include "PCH.h"
-
 #include "Editing.h"
+
+#include "CoreMacros.h"
 
 #include "Files/File.h"
 #include "CMDenums.h"
@@ -11,26 +12,12 @@ bool renameElement(size_t fIndex, size_t iIndex)
 {
 	std::string name;
 
-	std::cout << "Old: " << File::Get().elements[fIndex][iIndex].name << "\nNew: ";
+	std::cout << C_YELLOW << "Old: " << File::Get().elements[fIndex][iIndex].name << C_RESET << "\nNew: ";
 	std::cin.ignore(0);
 	std::getline(std::cin, name);
 	std::string base = File::Get().path;
 
-	switch (fIndex)
-	{
-	case 0:
-		base += "\\sessions\\";
-		break;
-	case 1:
-		base += "\\locations\\";
-		break;
-	case 2:
-		base += "\\characters\\";
-		break;
-	case 3:
-		base += "\\items\\";
-		break;
-	}
+	appendCategory(base, fIndex);
 
 	std::filesystem::rename(base + File::Get().elements[fIndex][iIndex].name, base + name);
 	File::Get().elements[fIndex][iIndex].name = name;
@@ -42,26 +29,12 @@ bool renameComponent(size_t fIndex, size_t iIndex, size_t cIndex)
 {
 	std::string name;
 
-	std::cout << "Old: " << File::Get().elements[fIndex][iIndex].content[cIndex] << "\nNew: ";
+	std::cout << C_YELLOW << "Old: " << File::Get().elements[fIndex][iIndex].content[cIndex] << C_RESET << "\nNew: ";
 	std::cin.ignore(0);
 	std::getline(std::cin, name);
 	std::string base = File::Get().path;
 
-	switch (fIndex)
-	{
-	case 0:
-		base += "\\sessions\\";
-		break;
-	case 1:
-		base += "\\locations\\";
-		break;
-	case 2:
-		base += "\\characters\\";
-		break;
-	case 3:
-		base += "\\items\\";
-		break;
-	}
+	appendCategory(base, fIndex);
 
 	base += File::Get().elements[fIndex][iIndex].name + '\\';
 
@@ -80,21 +53,7 @@ bool cmdEdit(const std::vector<int>& command)
 
 	std::string path = File::Get().path;
 
-	switch (loc.folderIndex)
-	{
-	case 0:
-		path += "\\sessions\\";
-		break;
-	case 1:
-		path += "\\locations\\";
-		break;
-	case 2:
-		path += "\\characters\\";
-		break;
-	case 3:
-		path += "\\items\\";
-		break;
-	}
+	appendCategory(path, loc.folderIndex);
 
 	path += File::Get().elements[loc.folderIndex][loc.elementIndex].name + '\\' + File::Get().elements[loc.folderIndex][loc.elementIndex].content[loc.componentIndex];
 
@@ -109,10 +68,10 @@ bool cmdRename(const std::vector<int>& command)
 	if (!findItem(loc, command, 1))
 		return false;
 
-	if (loc.componentIndex != -2)
-		renameComponent(loc.folderIndex, loc.elementIndex, loc.componentIndex);
-	else
+	if (loc.componentIndex == -2)
 		renameElement(loc.folderIndex, loc.elementIndex);
+	else
+		renameComponent(loc.folderIndex, loc.elementIndex, loc.componentIndex);
 
 	return true;
 }
