@@ -40,11 +40,11 @@ bool findItem(ItemLocation& loc, const std::vector<int>& command, size_t startIn
 		break;
 
 	default:
-		std::cout << "---\nERROR: invalid access mode\n---\n";
+		std::cout << "---\nERROR: invalid item type\n---\n";
 		return false;
 	}
 
-	if (command[startIndex + 1] < File::Get().elements[loc.folderIndex].size())
+	if ((size_t)command[startIndex + 1] < File::Get().elements[loc.folderIndex].size())
 		loc.elementIndex = command[startIndex + 1];
 	else
 	{
@@ -54,7 +54,7 @@ bool findItem(ItemLocation& loc, const std::vector<int>& command, size_t startIn
 
 	if (command.size() == startIndex + 4 - current && (ARG)command[startIndex + 2 - current] == ARG::CMP)
 	{
-		if (command[startIndex + 3 - current] < File::Get().elements[loc.folderIndex][loc.elementIndex].content.size())
+		if ((size_t)command[startIndex + 3 - current] < File::Get().elements[loc.folderIndex][loc.elementIndex].content.size())
 			loc.componentIndex = command[startIndex + 3 - current];
 		else
 		{
