@@ -8,7 +8,7 @@
 #include "Helpers.h"
 
 
-static void viewElement(int fIndex, int iIndex)
+void viewElement(int fIndex, int iIndex)
 {
 	const Element& e = File::Get().elements[fIndex][iIndex];
 
@@ -16,7 +16,7 @@ static void viewElement(int fIndex, int iIndex)
 
 	for (size_t i = 0; i < e.content.size(); i++)
 	{
-		std::cout << "------------\n";
+		std::cout << "-----------------------\n";
 
 		std::cout << i << " - " << e.content[i] << ":" << "\n\n";
 		std::string path = File::Get().path;
@@ -46,7 +46,9 @@ bool cmdList(const std::vector<int>& command)
 {
 	std::cout << C_CYAN;
 
-	if (!listElements((ARG)command[1]))
+	ARG sort = (command.size() == 3) ? (ARG)command[2] : ARG::DEF;
+
+	if (!listElements((ARG)command[1], sort))
 	{
 		LOG_ERROR("invalid element type");
 		return false;

@@ -21,7 +21,7 @@ static bool getSelected(ItemLocation& loc)
 
 bool findItem(ItemLocation& loc, const std::vector<int>& command, size_t startIndex)
 {
-	bool current = false;;
+	bool current = false;
 
 	switch ((ARG)command[startIndex])
 	{
@@ -58,9 +58,11 @@ bool findItem(ItemLocation& loc, const std::vector<int>& command, size_t startIn
 		}
 	}
 
-	if (command.size() == startIndex + 4 - current && (ARG)command[startIndex + 2 - current] == ARG::CMP)
+	if ((ARG)command[command.size() - 2] == ARG::CMP)
 	{
-		if (command[startIndex + 3 - current] < (int)File::Get().elements[loc.folderIndex][loc.elementIndex].content.size())
+		if ((ARG)command[startIndex + 3 - current] == ARG::BCK)
+			loc.componentIndex = -1;
+		else if (command[startIndex + 3 - current] < (int)File::Get().elements[loc.folderIndex][loc.elementIndex].content.size())
 			loc.componentIndex = command[startIndex + 3 - current];
 		else
 		{
@@ -101,7 +103,7 @@ void printFile(const std::string& fileName)
 }
 
 
-bool listElements(ARG code)
+bool listElements(ARG code, ARG sort)
 {
 	int group;
 
@@ -125,6 +127,18 @@ bool listElements(ARG code)
 		break;
 	default:
 		return false;
+	}
+
+	switch (sort)
+	{
+	case ARG::DEF:
+		std::sort(File::Get().elements[group].begin(), File::Get().elements[group].end(),
+			[](const Element& left, const Element& right) -> bool { return left.number > right.number; });
+		break;
+	case ARG::REL:
+		std::sort(File::Get().elements[group].begin(), File::Get().elements[group].end(),
+			[](const Element& left, const Element& right) -> bool { return left.relevance > right.relevance; });
+		break;
 	}
 
 	for (size_t i = 0; i < File::Get().elements[group].size(); i++)

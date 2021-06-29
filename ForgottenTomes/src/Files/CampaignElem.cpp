@@ -3,7 +3,7 @@
 #include "CampaignElem.h"
 
 
-uint32_t Element::count = 0;
+uint32_t Element::count[4] = { 0 };
 
 
 nlohmann::json Element::serialize() const
@@ -28,5 +28,5 @@ void Element::deserialize(const nlohmann::json& data)
 	for (const auto& ct : data["content"])
 		content.push_back(ct);
 
-	count++;
+	count[type]++;
 }

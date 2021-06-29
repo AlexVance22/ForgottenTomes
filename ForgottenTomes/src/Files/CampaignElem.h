@@ -3,8 +3,9 @@
 
 struct Element
 {
-	static uint32_t count;
+	static uint32_t count[4];
 
+	uint32_t type = 0;
 	uint32_t number;
 	std::string name;
 	std::vector<std::string> content;
@@ -13,7 +14,7 @@ struct Element
 	Relevance relevance = Relevance::Invalid;
 
 
-	Element() : number(count++) { name = "Element" + std::to_string(number); }
+	Element(uint32_t _type) : type(_type), number(count[_type]++) { name = "Element" + std::to_string(number); }
 	Element(const nlohmann::json& data) : number(0) { deserialize(data); }
 
 	nlohmann::json serialize() const;

@@ -131,7 +131,7 @@ bool cmdLookup(const std::vector<int>& command)
 			return true;
 		}
 		else
-			std::cout << "Element is not implemented\n\n";
+			std::cout << C_RED << "\nElement is not implemented\n\n" << C_RESET;
 	}
 	
 	return true;

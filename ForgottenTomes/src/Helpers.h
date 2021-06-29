@@ -10,4 +10,4 @@ void appendCategory(std::string& base, size_t fIndex);
 
 void printFile(const std::string& fileName);
 
-bool listElements(ARG code);
+bool listElements(ARG code, ARG sort);
