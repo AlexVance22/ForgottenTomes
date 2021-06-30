@@ -8,6 +8,7 @@
 #include <future>
 #include <vector>
 #include <string>
+#include <array>
 
 #ifdef FTOMES_PLATFORM_WINDOWS
 	#include <windows.h>
