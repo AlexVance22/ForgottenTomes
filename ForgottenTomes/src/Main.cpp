@@ -137,6 +137,8 @@ std::vector<int> getCommand()
 
 int main()
 {
+	std::cout << C_RESET;
+
 	bool open = false;
 
 	while (true)
@@ -164,15 +166,9 @@ int main()
 
 		switch ((CMD)command[0])
 		{
-		case CMD::ADD:
-			if (cmdAdd(command))
-				cmdSave();
+		case CMD::HLP:
+			cmdHelp(command);
 			break;
-		case CMD::DEL:
-			if (cmdDel(command))
-				cmdSave();
-			break;
-
 		case CMD::LST:
 			cmdList(command);
 			break;
@@ -185,6 +181,14 @@ int main()
 		case CMD::LKP:
 			cmdLookup(command);
 			break;
+		case CMD::ADD:
+			if (cmdAdd(command))
+				cmdSave();
+			break;
+		case CMD::DEL:
+			if (cmdDel(command))
+				cmdSave();
+			break;
 		case CMD::EDT:
 			if (cmdEdit(command))
 				cmdSave();
@@ -193,10 +197,6 @@ int main()
 			if (cmdRename(command))
 				cmdSave();
 			break;
-		case CMD::HLP:
-			cmdHelp(command);
-			break;
-
 		case CMD::CRT:
 			if (cmdCreate())
 				open = true;
