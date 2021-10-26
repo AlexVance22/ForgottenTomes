@@ -8,9 +8,9 @@
 #include "Helpers.h"
 
 
-static void valueElement(size_t fIndex, size_t iIndex)
+static void valueElement(size_t cIndex, int eIndex)
 {
-	int rel = (int)File::Get().elements[fIndex][iIndex].relevance;
+	int rel = (int)File::Category(cIndex)[eIndex].relevance;
 
 	std::cout << C_YELLOW << "Old: ";
 		
@@ -35,39 +35,34 @@ static void valueElement(size_t fIndex, size_t iIndex)
 	std::cin.ignore(0);
 	std::getline(std::cin, relstr);
 
-	File::Get().elements[fIndex][iIndex].relevance = (Element::Relevance)std::stoi(relstr);
+	File::Category(cIndex)[eIndex].relevance = (Element::Relevance)std::stoi(relstr);
 }
 
-static void renameElement(size_t fIndex, size_t iIndex)
+static void renameElement(size_t cIndex, int eIndex)
 {
-	std::string name;
+	std::string path = categoryPath(cIndex);
 
-	std::cout << C_YELLOW << "Old: " << File::Get().elements[fIndex][iIndex].name << C_RESET << "\nNew: ";
+	std::cout << C_YELLOW << "Old: " << File::Category(cIndex)[eIndex].name << C_RESET << "\nNew: ";
 	std::cin.ignore(0);
+	std::string name;
 	std::getline(std::cin, name);
-	std::string base = File::Get().path;
 
-	appendCategory(base, fIndex);
-
-	std::filesystem::rename(base + File::Get().elements[fIndex][iIndex].name, base + name);
-	File::Get().elements[fIndex][iIndex].name = name;
+	std::filesystem::rename(path + File::Category(cIndex)[eIndex].name, path + name);
+	File::Category(cIndex)[eIndex].name = name;
 }
 
-static void renameComponent(size_t fIndex, size_t iIndex, size_t cIndex)
+static void renameArticle(size_t cIndex, int eIndex, int aIndex)
 {
-	std::string name;
+	std::string path = categoryPath(cIndex);
+	path += File::Category(cIndex)[eIndex].name + '/';
 
-	std::cout << C_YELLOW << "Old: " << File::Get().elements[fIndex][iIndex].content[cIndex] << C_RESET << "\nNew: ";
+	std::cout << C_YELLOW << "Old: " << File::Article({ cIndex, eIndex, aIndex }) << C_RESET << "\nNew: ";
 	std::cin.ignore(0);
+	std::string name;
 	std::getline(std::cin, name);
-	std::string base = File::Get().path;
 
-	appendCategory(base, fIndex);
-
-	base += File::Get().elements[fIndex][iIndex].name + '\\';
-
-	std::filesystem::rename(base + File::Get().elements[fIndex][iIndex].content[cIndex] + ".txt", base + name + ".txt");
-	File::Get().elements[fIndex][iIndex].content[cIndex] = name;
+	std::filesystem::rename(path + File::Article({ cIndex, eIndex, aIndex }) + ".txt", path + name + ".txt");
+	File::Category(cIndex)[eIndex].content[aIndex] = name;
 }
 
 
@@ -75,21 +70,22 @@ bool cmdEdit(const std::vector<int>& command)
 {
 	ItemLocation loc;
 
+	/*
 	if ((ARG)command[command.size() - 1] == ARG::REL)
 	{
-		if (!findItem(loc, command, 1))
+		if (!parseLocStr(loc, command, 1))
 			return false;
 
-		valueElement(loc.folderIndex, loc.elementIndex);
+		valueElement(loc.category, loc.element);
 		return true;
 	}
+	*/
 
-	if (!findItem(loc, command, 1))
+	if (!parseLocStr(loc, command, 1))
 		return false;
 
-	std::string path = File::Get().path;
-	appendCategory(path, loc.folderIndex);
-	path += File::Get().elements[loc.folderIndex][loc.elementIndex].name + '\\' + File::Get().elements[loc.folderIndex][loc.elementIndex].content[loc.componentIndex];
+	std::string path = categoryPath(loc.category);
+	path += File::Element(loc).name + '/' + File::Article(loc) + ".txt";
 
 	system((std::string("notepad.exe ") + path).c_str());
 
@@ -99,13 +95,13 @@ bool cmdEdit(const std::vector<int>& command)
 bool cmdRename(const std::vector<int>& command)
 {
 	ItemLocation loc;
-	if (!findItem(loc, command, 1))
+	if (!parseLocStr(loc, command, 1))
 		return false;
 
-	if (loc.componentIndex == -2)
-		renameElement(loc.folderIndex, loc.elementIndex);
+	if (loc.article == -2)
+		renameElement(loc.category, loc.element);
 	else
-		renameComponent(loc.folderIndex, loc.elementIndex, loc.componentIndex);
+		renameArticle(loc.category, loc.element, loc.article);
 
 	return true;
 }

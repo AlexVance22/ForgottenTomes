@@ -2,131 +2,90 @@
 #include "ElementStorage.h"
 
 #include "CoreMacros.h"
-
-#include "Editing.h"
-#include "Utilities.h"
+#include "CMDenums.h"
 
 #include "Files/File.h"
-#include "CMDenums.h"
+#include "Utilities.h"
 #include "Helpers.h"
 
 
-static void addComp(size_t fIndex, int iIndex, int cIndex, bool doBrief = false)
+static void addArticle(size_t cIndex, int eIndex, int aIndex)
 {
-	std::string path = File::Get().path;
+	std::string path = categoryPath(cIndex);
+	Element& e = File::Category(cIndex)[eIndex];
+	path += e.name + '/';
 
-	appendCategory(path, fIndex);
+	if (aIndex == -1)
+		aIndex = e.content.size();
 
-	Element& e = File::Get().elements[fIndex][iIndex];
-
-	std::string name = doBrief ? "Brief" : "New Element" + std::to_string(e.content.size());
-
-	if (cIndex == -1)
-	{
-		e.content.emplace_back(name);
-		path += e.name + "/" + e.content[e.content.size() - 1] + ".txt";
-	}
-	else
-	{
-		e.content.emplace(e.content.begin() + cIndex, name);
-		path += e.name + "/" + e.content[cIndex] + ".txt";
-	}
+	std::string name = e.content.size() == 0 ? "Brief" : "Article_" + std::to_string(e.content.size());
+	e.content.emplace(e.content.begin() + aIndex, name);
+	path += e.content[aIndex] + ".txt";
 
 	std::cout << C_GREEN;
-	viewElement(fIndex, iIndex);
+	viewElement(cIndex, eIndex);
 	std::cout << '\n' << C_RESET;
 
 	std::ofstream stream(path);
 }
 
-static void delComp(size_t fIndex, int iIndex, int cIndex)
+static void delArticle(size_t cIndex, int eIndex, int aIndex)
 {
-	std::string path = File::Get().path;
+	std::string path = categoryPath(cIndex);
+	Element& e = File::Category(cIndex)[eIndex];
 
-	appendCategory(path, fIndex);
+	if (aIndex == -1)
+		aIndex = e.content.size() - 1;
 
-	Element& e = File::Get().elements[fIndex][iIndex];
-
-	if (cIndex == -1)
-	{
-		path += e.name + "/" + e.content[e.content.size() - 1] + ".txt";
-		e.content.pop_back();
-	}
-	else
-	{
-		path += e.name + "/" + e.content[cIndex] + ".txt";
-		e.content.erase(e.content.begin() + cIndex);
-	}
+	path += e.name + "/" + e.content[aIndex] + ".txt";
+	e.content.erase(e.content.begin() + aIndex);
 
 	std::cout << C_RED;
-	viewElement(fIndex, iIndex);
+	viewElement(cIndex, eIndex);
 	std::cout << '\n' << C_RESET;
 
 	std::remove(path.c_str());
 }
 
 
-static void addElement(size_t fIndex, int iIndex)
+static void addElement(size_t cIndex, int eIndex)
 {
-	std::string path = File::Get().path;
+	auto& category = File::Category(cIndex);
 
-	appendCategory(path, fIndex);
+	if (eIndex == -1)
+		eIndex = category.size();
 
-	if (iIndex == -1)
-	{
-		const Element& e = File::Get().elements[fIndex].emplace_back(fIndex);
-		path += e.name;
-		addComp(fIndex, File::Get().elements[fIndex].size() - 1, -1, true);
-	}
-	else
-	{
-		const auto& e = File::Get().elements[fIndex].emplace(File::Get().elements[fIndex].begin() + iIndex, fIndex);
-		path += e->name;
-		addComp(fIndex, iIndex, -1, true);
-	}
-
-	std::filesystem::create_directories(path);
+	const Element& e = *category.emplace(category.begin() + eIndex, cIndex);
+	std::filesystem::create_directories(categoryPath(cIndex) + e.name);
+	addArticle(cIndex, eIndex, 0);
 }
 
-static void delElement(size_t fIndex, int iIndex)
+static void delElement(size_t cIndex, int eIndex)
 {
-	const auto& e = File::Get().elements[fIndex];
-	std::string path;
+	auto& category = File::Category(cIndex);
 
-	appendCategory(path, fIndex);
+	if (eIndex == -1)
+		eIndex = category.size() - 1;
 
-	if (iIndex == -1)
-	{
-		std::filesystem::remove(path + e[e.size() - 1].name);
-		File::Get().elements[fIndex].pop_back();
-	}
-	else
-	{
-		std::filesystem::remove(path + e[iIndex].name);
-		File::Get().elements[fIndex].erase(File::Get().elements[fIndex].begin() + iIndex);
-	}
+	std::filesystem::remove_all(categoryPath(cIndex) + category[eIndex].name);
+	category.erase(category.begin() + eIndex);
 }
 
 
 bool cmdAdd(const std::vector<int>& command)
 {
 	ItemLocation loc;
-	if (!findItem(loc, command, 1))
+	if (!parseLocStr(loc, command, 1))
 		return false;
 
-	if ((ARG)loc.elementIndex == ARG::BCK)
-		loc.elementIndex = -1;
-	if ((ARG)loc.componentIndex == ARG::BCK)
-		loc.componentIndex = -1;
-
-	if (loc.componentIndex == -2)
-		addElement(loc.folderIndex, loc.elementIndex);
+	if (loc.article == -2)
+		addElement(loc.category, loc.element);
 	else
-		addComp(loc.folderIndex, loc.elementIndex, loc.componentIndex);
+		addArticle(loc.category, loc.element, loc.article);
 
 	std::cout << C_GREEN;
-	listElements((ARG)command[1], ARG::DEF);
-	std::cout << C_RESET;
+	listElements((ARG)command[1]);
+	std::cout << C_RESET << '\n';
 
 	return true;
 }
@@ -134,22 +93,17 @@ bool cmdAdd(const std::vector<int>& command)
 bool cmdDel(const std::vector<int>& command)
 {
 	ItemLocation loc;
-	if (!findItem(loc, command, 1))
+	if (!parseLocStr(loc, command, 1))
 		return false;
 
-	if ((ARG)loc.elementIndex == ARG::BCK)
-		loc.elementIndex = -1;
-	if ((ARG)loc.componentIndex == ARG::BCK)
-		loc.componentIndex = -1;
-
-	if (loc.componentIndex == -2)
-		delElement(loc.folderIndex, loc.elementIndex);
+	if (loc.article == -2)
+		delElement(loc.category, loc.element);
 	else
-		delComp(loc.folderIndex, loc.elementIndex, loc.componentIndex);
+		delArticle(loc.category, loc.element, loc.article);
 
 	std::cout << C_RED;
-	listElements((ARG)command[1], ARG::DEF);
-	std::cout << C_RESET;
+	listElements((ARG)command[1]);
+	std::cout << C_RESET << '\n';
 
 	return true;
 }

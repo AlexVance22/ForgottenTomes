@@ -3,11 +3,14 @@
 #include "CampaignElem.h"
 
 
+enum class ARG;
+
+
 struct ItemLocation
 {
-	int folderIndex = -1;
-	int elementIndex = -1;
-	int componentIndex = -2;
+	size_t category = 4;
+	int element = -1;
+	int article = -1;
 };
 
 
@@ -16,29 +19,26 @@ class File
 private:
 	File() {}
 
-
 public:
-	std::string dir;
-	std::string path;
-	std::string name;
+	std::string rootdir;
+	std::string filepath;
 
 	ItemLocation selected;
 
 	std::vector<Element> elements[4];
 
-
-	void save(const std::string& path);
-	bool load(const std::string& path);
+	void save(const std::string& filepath);
+	bool load(const std::string& filepath);
 	void reset();
 
+	static File& Get();
 
-    static File& Get()
-    {
-        static File instance;
-        return instance;
-    }
-	static ItemLocation& Selected() { return Get().selected; }
-	~File() { save(path); }
+	static bool IsSelected();
+	static std::optional<ItemLocation> Selected();
+
+	static std::vector<Element>& Category(uint32_t category);
+	static Element& Element(ItemLocation loc);
+	static const std::string& Article(ItemLocation loc);
 
 	File(const File&) = delete;
 	void operator=(const File&) = delete;

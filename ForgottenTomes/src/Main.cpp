@@ -1,8 +1,6 @@
 #include "PCH.h"
 
 #include "CoreMacros.h"
-
-#include "Files/File.h"
 #include "CMDenums.h"
 
 #include "Commands/FileManagement.h"
@@ -10,6 +8,17 @@
 #include "Commands/References.h"
 #include "Commands/Utilities.h"
 #include "Commands/Editing.h"
+
+
+bool isNumber(const std::string& str)
+{
+	for (char c : str)
+	{
+		if (!std::isdigit(c))
+			return false;
+	}
+	return true;
+}
 
 
 void cmdHelp(const std::vector<int>& command)
@@ -104,21 +113,13 @@ void cmdHelp(const std::vector<int>& command)
 
 std::vector<int> getCommand()
 {
-	auto isNumber = [](const std::string& str) {
-		for (char c : str)
-		{
-			if (!std::isdigit(c))
-				return false;
-		}
-		return true;
-	};
-
 	std::string cmd;
-	std::vector<int> commands;
 
+	std::cout << ">";
 	std::cin.ignore(0);
 	std::getline(std::cin, cmd);
 	
+	std::vector<int> commands;
 	for (std::stringstream tokens(cmd); tokens >> cmd;)
 	{
 		if (isNumber(cmd))
@@ -126,9 +127,6 @@ std::vector<int> getCommand()
 		else
 			commands.push_back(strHash(cmd));
 	}
-
-	if (commands.size() == 0)
-		commands.push_back(0);
 
 	system("CLS");
 
@@ -138,17 +136,15 @@ std::vector<int> getCommand()
 
 int main()
 {
-	std::vector<std::future<void>> saveProcesses;
+	std::cout << C_RESET;
 
 	bool open = false;
 
 	while (true)
 	{
-		std::cout << ">";
-
 		std::vector<int> command = getCommand();
-
-		saveProcesses.clear();
+		if (command.size() == 0)
+			continue;
 
 		switch ((CMD)command[0])
 		{
@@ -157,24 +153,18 @@ int main()
 		case CMD::EXT:
 			return 0;
 		default:
-			if (File::Get().dir == "")
+			if (!open)
 			{
 				LOG_ERROR("no file open");
-				goto end;
+				continue;
 			}
 		}
 
 		switch ((CMD)command[0])
 		{
-		case CMD::ADD:
-			if (cmdAdd(command))
-				cmdSave(saveProcesses);
+		case CMD::HLP:
+			cmdHelp(command);
 			break;
-		case CMD::DEL:
-			if (cmdDel(command))
-				cmdSave(saveProcesses);
-			break;
-
 		case CMD::LST:
 			cmdList(command);
 			break;
@@ -187,20 +177,22 @@ int main()
 		case CMD::LKP:
 			cmdLookup(command);
 			break;
-
+		case CMD::ADD:
+			if (cmdAdd(command))
+				cmdSave();
+			break;
+		case CMD::DEL:
+			if (cmdDel(command))
+				cmdSave();
+			break;
 		case CMD::EDT:
 			if (cmdEdit(command))
-				cmdSave(saveProcesses);
+				cmdSave();
 			break;
 		case CMD::RNM:
 			if (cmdRename(command))
-				cmdSave(saveProcesses);
+				cmdSave();
 			break;
-
-		case CMD::HLP:
-			cmdHelp(command);
-			break;
-
 		case CMD::CRT:
 			if (cmdCreate())
 				open = true;
@@ -209,14 +201,8 @@ int main()
 			if (cmdOpen())
 				open = true;
 			break;
-
-		case CMD::INV:
-			LOG_ERROR("empty command");
-
 		default:
 			LOG_ERROR("unrecognised command");
 		}
-
-	end:;
 	}
 }

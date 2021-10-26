@@ -8,66 +8,51 @@
 #include "Helpers.h"
 
 
-void viewElement(int fIndex, int iIndex)
+void viewElement(size_t cIndex, int eIndex)
 {
-	const Element& e = File::Get().elements[fIndex][iIndex];
-
-	std::cout << "Name: " << e.name << "\n\n";
+	const Element& e = File::Category(cIndex)[eIndex];
+	std::cout << "Name: " << e.name << '\n';
 
 	for (size_t i = 0; i < e.content.size(); i++)
 	{
-		std::cout << "-----------------------\n";
-
+		std::cout << "\n-----------------------\n";
 		std::cout << i << " - " << e.content[i] << ":" << "\n\n";
-		std::string path = File::Get().path;
-
-		appendCategory(path, fIndex);
-
-		printFile(path + e.name + '\\' + e.content[i] + ".txt");
+		std::string path = categoryPath(cIndex);
+		printFile(path + e.name + '/' + e.content[i] + ".txt");
 	}
 }
 
-static void viewComponent(int fIndex, int iIndex, int cIndex)
+void viewArticle(size_t cIndex, int eIndex, int aIndex)
 {
-	const Element& e = File::Get().elements[fIndex][iIndex];
+	const Element& e = File::Category(cIndex)[eIndex];
 
-	std::cout << e.name + " article " << cIndex << ":\n\n";
-	std::cout << e.content[cIndex] + "\n\n";
-
-	std::string path = File::Get().path;
-
-	appendCategory(path, fIndex);
-
-	printFile(path + e.name + '\\' + e.content[cIndex] + ".txt");
+	std::cout << e.name + " article " << aIndex << ":\n\n";
+	std::cout << e.content[aIndex] + "\n\n";
+	std::string path = categoryPath(cIndex);
+	printFile(path + e.name + '/' + e.content[aIndex] + ".txt");
 }
 
 
-bool cmdList(const std::vector<int>& command)
+void cmdList(const std::vector<int>& command)
 {
 	std::cout << C_CYAN;
 
-	ARG sort = (command.size() == 3) ? (ARG)command[2] : ARG::DEF;
-
-	if (!listElements((ARG)command[1], sort))
-	{
+	if (!listElements((ARG)command[1]))
 		LOG_ERROR("invalid element type");
-		return false;
-	}
-	std::cout << C_RESET;
 
-	return true;
+	std::cout << C_RESET;
 }
 
 bool cmdSelect(const std::vector<int>& command)
 {
 	ItemLocation loc;
-	if (!findItem(loc, command, 1))
+	if (!parseLocStr(loc, command, 1))
 		return false;
 
-	File::Selected() = loc;
+	File::Get().selected = loc;
 
 	std::cout << C_CYAN;
-	viewElement(loc.folderIndex, loc.elementIndex);
+	viewElement(loc.category, loc.element);
 	std::cout << "-------------------------------------------\n\n" << C_RESET;
 
 	return true;
@@ -76,17 +61,17 @@ bool cmdSelect(const std::vector<int>& command)
 bool cmdView(const std::vector<int>& command)
 {
 	ItemLocation loc;
-	if (!findItem(loc, command, 1))
+	if (!parseLocStr(loc, command, 1))
 		return false;
 
 	std::cout << C_CYAN;
 
-	if (loc.componentIndex == -2)
-		viewElement(loc.folderIndex, loc.elementIndex);
+	if (loc.article == -2)
+		viewElement(loc.category, loc.element);
 	else
-		viewComponent(loc.folderIndex, loc.elementIndex, loc.componentIndex);
+		viewArticle(loc.category, loc.element, loc.article);
 
-	std::cout << "-------------------------------------------\n\n" << C_RESET;
+	std::cout << "\n-------------------------------------------\n\n" << C_RESET;
 
 	return true;
 }

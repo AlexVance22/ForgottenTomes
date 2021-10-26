@@ -1,7 +1,7 @@
 #pragma once
 
 
-extern std::hash<std::string> strHash;
+extern const std::hash<std::string> strHash;
 
 
 enum class CMD
@@ -36,9 +36,6 @@ enum class ARG
 	LOC = 200649126,
 	CHA = -1959090416,
 	ITM = -1623706650,
-
-	DEF = -1824826402,
-	REL = 1113510858,
 
 	CMP = 392652633,
 };

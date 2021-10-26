@@ -1,14 +1,16 @@
 #include "PCH.h"
-
 #include "File.h"
 
+#include "CoreMacros.h"
+#include "CMDenums.h"
 
-void File::save(const std::string& path)
+
+void File::save(const std::string& filepath)
 {
-	dir = path;
+	this->filepath = filepath;
 
-	std::ofstream f(path, std::ofstream::out | std::ofstream::trunc);
-	if (f.is_open())
+	std::ofstream stream(filepath, std::ofstream::trunc);
+	if (stream.is_open())
 	{
 		nlohmann::json j;
 		
@@ -28,38 +30,38 @@ void File::save(const std::string& path)
 		for (size_t i = 0; i < elements[3].size(); i++)
 			j["items"].push_back(elements[3][i].serialize());
 
-		f << j;
-		f.close();
+		stream << j;
+		stream.close();
 
-		this->path = path.substr(0, path.rfind('\\'));
+		rootdir = filepath.substr(0, filepath.rfind('/'));
 	}
 }
 
-bool File::load(const std::string& path)
+bool File::load(const std::string& filepath)
 {
-	dir = path;
+	this->filepath = filepath;
 
-	std::ifstream f(path, std::ifstream::in);
-	if (f.is_open())
+	std::ifstream stream(filepath);
+	if (stream.is_open())
 	{
 		nlohmann::json j;
-		f >> j;
+		stream >> j;
 
 		for (const auto& s : j["sessions"])
-			elements[0].emplace_back(s);
+			elements[0].emplace_back(0, s);
 
 		for (const auto& l : j["locations"])
-			elements[1].emplace_back(l);
+			elements[1].emplace_back(1, l);
 
 		for (const auto& c : j["characters"])
-			elements[2].emplace_back(c);
+			elements[2].emplace_back(2, c);
 
-		for (const auto& c : j["items"])
-			elements[3].emplace_back(c);
+		for (const auto& i : j["items"])
+			elements[3].emplace_back(3, i);
 
-		f.close();
+		stream.close();
 
-		this->path = path.substr(0, path.rfind('\\'));
+		rootdir = filepath.substr(0, filepath.rfind('/'));
 
 		return true;
 	}
@@ -69,10 +71,52 @@ bool File::load(const std::string& path)
 
 void File::reset()
 {
-	dir.clear();
-	path.clear();
-	name.clear();
+	rootdir.clear();
+	filepath.clear();
 
 	for (size_t i = 0; i < 4; i++)
 		elements[i].clear();
+}
+
+
+File& File::Get()
+{
+	static File instance;
+	return instance;
+}
+
+
+bool File::IsSelected()
+{
+	if (Get().selected.category == 4 || Get().selected.element == -1 || Get().selected.article == -1)
+		return false;
+
+	return true;
+}
+
+std::optional<ItemLocation> File::Selected()
+{
+	if (!IsSelected())
+	{
+		LOG_ERROR("no item selected");
+		return {};
+	}
+
+	return Get().selected;
+}
+
+
+std::vector<Element>& File::Category(uint32_t category)
+{
+	return Get().elements[category];
+}
+
+Element& File::Element(ItemLocation loc)
+{
+	return Get().elements[loc.category][loc.element];
+}
+
+const std::string& File::Article(ItemLocation loc)
+{
+	return Get().elements[loc.category][loc.element].content[loc.article];
 }

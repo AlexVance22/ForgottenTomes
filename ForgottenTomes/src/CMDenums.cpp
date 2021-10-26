@@ -3,4 +3,4 @@
 #include "CMDenums.h"
 
 
-std::hash<std::string> strHash;
+const std::hash<std::string> strHash;

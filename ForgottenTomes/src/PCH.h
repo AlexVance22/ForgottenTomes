@@ -1,11 +1,11 @@
 #pragma once
 
 #include <filesystem>
-#include <functional>
+#include <algorithm>
+#include <optional>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <future>
 #include <vector>
 #include <string>
 #include <array>
