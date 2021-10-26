@@ -1,8 +1,6 @@
 #include "PCH.h"
 
 #include "CoreMacros.h"
-
-#include "Files/File.h"
 #include "CMDenums.h"
 
 #include "Commands/FileManagement.h"
@@ -116,6 +114,7 @@ std::vector<int> getCommand()
 	std::string cmd;
 	std::vector<int> commands;
 
+	std::cout << ">";
 	std::cin.ignore(0);
 	std::getline(std::cin, cmd);
 	
@@ -138,17 +137,16 @@ std::vector<int> getCommand()
 
 int main()
 {
-	std::vector<std::future<void>> saveProcesses;
-
 	bool open = false;
 
 	while (true)
 	{
-		std::cout << ">";
-
 		std::vector<int> command = getCommand();
-
-		saveProcesses.clear();
+		if (command.size() == 0)
+		{
+			LOG_ERROR("empty command");
+			continue;
+		}
 
 		switch ((CMD)command[0])
 		{
@@ -157,10 +155,10 @@ int main()
 		case CMD::EXT:
 			return 0;
 		default:
-			if (File::Get().dir == "")
+			if (!open)
 			{
 				LOG_ERROR("no file open");
-				goto end;
+				continue;
 			}
 		}
 
@@ -168,11 +166,11 @@ int main()
 		{
 		case CMD::ADD:
 			if (cmdAdd(command))
-				cmdSave(saveProcesses);
+				cmdSave();
 			break;
 		case CMD::DEL:
 			if (cmdDel(command))
-				cmdSave(saveProcesses);
+				cmdSave();
 			break;
 
 		case CMD::LST:
@@ -187,16 +185,14 @@ int main()
 		case CMD::LKP:
 			cmdLookup(command);
 			break;
-
 		case CMD::EDT:
 			if (cmdEdit(command))
-				cmdSave(saveProcesses);
+				cmdSave();
 			break;
 		case CMD::RNM:
 			if (cmdRename(command))
-				cmdSave(saveProcesses);
+				cmdSave();
 			break;
-
 		case CMD::HLP:
 			cmdHelp(command);
 			break;
@@ -209,14 +205,8 @@ int main()
 			if (cmdOpen())
 				open = true;
 			break;
-
-		case CMD::INV:
-			LOG_ERROR("empty command");
-
 		default:
 			LOG_ERROR("unrecognised command");
 		}
-
-	end:;
 	}
 }

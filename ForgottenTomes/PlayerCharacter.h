@@ -26,10 +26,16 @@ struct PlayerClass
 	const uint32_t savingThrows;
 
 	const uint32_t casterType;
+	const size_t casterAbility;
 
 	TableElement<Modifier> modifiers;
 	TableElement<Accumulable> accumulables;
 
+	PlayerClass(const nlohmann::json& j)
+		: hitDice(j["hit-dice"]), savingThrows(getSavingThrows(j["saving-throws"][0])), casterType(j["caster-type"]), casterAbility(j["caster-ability"])
+	{}
+
+private:
 	int getSavingThrows(const nlohmann::json& j)
 	{
 		uint32_t result = 0;
@@ -37,10 +43,6 @@ struct PlayerClass
 		result &= 1 << j[1];
 		return result;
 	}
-
-	PlayerClass(const nlohmann::json& j) 
-		: hitDice(j["hit-dice"]), savingThrows(getSavingThrows(j["saving-throws"][0])), casterType(j["spellcasting-level"]) 
-	{}
 };
 
 
@@ -102,62 +104,27 @@ private:
 
 	std::unordered_map<Skill, Ability> skillToAbility;
 
-	int getProficiencyBonus() { return (m_level - 1) / 4 + 2; }
-	void updateModifier(Ability ability)
-	{
-		m_abilities[(size_t)ability] = m_scores[(size_t)ability] / 2 - 5;
-	}
+	int getProficiencyBonus();
+	void updateModifier(Ability ability);
 
-	nlohmann::json getClass(const std::string& className)
-	{
-		std::ifstream stream("res/classes.json");
-		nlohmann::json j;
-		stream >> j;
-		stream.close();
-
-		return j[className];
-	}
-	void init()
-	{
-		skillToAbility[Skill::Acrobatics] =		(Ability)1;
-		skillToAbility[Skill::AnimalHandling] = (Ability)4;
-		skillToAbility[Skill::Arcana] =			(Ability)3;
-		skillToAbility[Skill::Athletics] =		(Ability)0;
-		skillToAbility[Skill::Deception] =		(Ability)5;
-		skillToAbility[Skill::History] =		(Ability)3;
-		skillToAbility[Skill::Insight] =		(Ability)4;
-		skillToAbility[Skill::Intimidation] =	(Ability)5;
-		skillToAbility[Skill::Investigation] =	(Ability)3;
-		skillToAbility[Skill::Medicine] =		(Ability)4;
-		skillToAbility[Skill::Nature] =			(Ability)3;
-		skillToAbility[Skill::Perception] =		(Ability)4;
-		skillToAbility[Skill::Performance] =	(Ability)5;
-		skillToAbility[Skill::Persuasion] =		(Ability)5;
-		skillToAbility[Skill::Religion] =		(Ability)3;
-		skillToAbility[Skill::SleightOfHand] =	(Ability)1;
-		skillToAbility[Skill::Stealth] =		(Ability)1;
-		skillToAbility[Skill::Survival] =		(Ability)4;
-	}
+	nlohmann::json getClass(const std::string& className);
+	void init();
 
 public:
-	PlayerCharacter(const std::string& className) : m_class(getClass(className)) {}
-	PlayerCharacter(const nlohmann::json& character) : m_class(character["class"]), m_level(character["level"]) {}
+	PlayerCharacter(const std::string& className);
+	PlayerCharacter(const nlohmann::json& character);
 
-	void toggleSkill(Skill skill)
+	void toggleSkill(Skill skill);
+	int getSkillModifier(Skill skill);
+	int getSavingThrowModifier(Ability ability);
+	int getSpellAttackModifier()
 	{
-		if (m_skills & (uint32_t)skill)
-			m_skills ^= (uint32_t)skill;
-		else
-			m_skills &= (uint32_t)skill;
+		if (m_class.casterType != 0)
+			return m_abilities[m_class.casterAbility] + getProficiencyBonus();
 	}
-	int getSkillModifier(Skill skill)
+	int getSpellSaveDC()
 	{
-		return m_abilities[(size_t)skillToAbility[skill]] + (getProficiencyBonus() * (m_skills & (uint32_t)skill));
-	}
-	int getSavingThrowModifier(Ability ability)
-	{
-		uint32_t abilityAsPow2 = (1 << (int)ability) >> 1;
-
-		return m_abilities[(size_t)ability] + getProficiencyBonus() * (abilityAsPow2 & m_class.savingThrows);
+		if (m_class.casterType != 0)
+			return m_abilities[m_class.casterAbility] + getProficiencyBonus() + 8;
 	}
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <filesystem>
-#include <functional>
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -9,6 +9,8 @@
 #include <vector>
 #include <string>
 #include <array>
+
+#include <optional>
 
 #ifdef FTOMES_PLATFORM_WINDOWS
 	#include <windows.h>

@@ -4,10 +4,10 @@
 #include "Files/File.h"
 
 
-bool findItem(ItemLocation& loc, const std::vector<int>& command, size_t startIndex);
+bool parseLocStr(ItemLocation& loc, const std::vector<int>& command, size_t idx);
 
-void appendCategory(std::string& base, size_t fIndex);
+void appendCategory(std::string& base, size_t cIndex);
 
 void printFile(const std::string& fileName);
 
-bool listElements(ARG code, ARG sort);
+bool listElements(ARG code);

@@ -5,144 +5,131 @@
 #include "Helpers.h"
 
 
-static bool getSelected(ItemLocation& loc)
-{
-	if (File::Selected().folderIndex != -1 && File::Selected().elementIndex != -1)
-	{
-		loc = File::Selected();
-		return true;
-	}
-	
-	LOG_ERROR("no item selected");
-
-	return false;
-}
-
-
-bool findItem(ItemLocation& loc, const std::vector<int>& command, size_t startIndex)
+bool parseLocStr(ItemLocation& loc, const std::vector<int>& command, size_t idx)
 {
 	bool current = false;
 
-	switch ((ARG)command[startIndex])
+	switch ((ARG)command[idx])
 	{
 	case ARG::CRN:
-		if (getSelected(loc))
+		if (File::IsSelected())
+		{
+			loc = File::Selected().value();
 			current = true;
+			break;
+		}
 		else
 			return false;
-
+	case ARG::SES:
+		loc.category = 0;
 		break;
-
-	case ARG::SES: loc.folderIndex = 0;
+	case ARG::LOC:
+		loc.category = 1;
 		break;
-	case ARG::LOC: loc.folderIndex = 1;
+	case ARG::CHA:
+		loc.category = 2;
 		break;
-	case ARG::CHA: loc.folderIndex = 2;
+	case ARG::ITM:
+		loc.category = 3;
 		break;
-	case ARG::ITM: loc.folderIndex = 3;
-		break;
-
 	default:
 		LOG_ERROR("invalid item type");
 		return false;
 	}
 
+	idx++;
+
 	if (!current)
 	{
-		if (command[startIndex] < (int)File::Get().elements[loc.folderIndex].size())
-			loc.elementIndex = command[startIndex + 1];
+		if ((ARG)command[idx] == ARG::BCK)
+			loc.element = -1;
 		else
-		{
-			LOG_ERROR("invalid item index");
-			return false;
-		}
+			loc.element = command[idx];
+		idx++;
 	}
 
-	if ((ARG)command[command.size() - 2] == ARG::CMP)
+	if (idx < command.size())
 	{
-		if ((ARG)command[startIndex + 3 - current] == ARG::BCK)
-			loc.componentIndex = -1;
-		else if (command[startIndex + 3 - current] < (int)File::Get().elements[loc.folderIndex][loc.elementIndex].content.size())
-			loc.componentIndex = command[startIndex + 3 - current];
-		else
+		if ((ARG)command[idx++] == ARG::CMP)
 		{
-			LOG_ERROR("invalid article index");
-			return false;
+			if ((ARG)command[idx] == ARG::BCK)
+				loc.article = -1;
+			else
+				loc.article = command[idx];
+			return true;
 		}
+		
+		LOG_ERROR("invalid trailing arguments");
+		return false;
 	}
-
+	
+	loc.article = -2;
 	return true;
 }
 
 
-void appendCategory(std::string& base, size_t fIndex)
+void appendCategory(std::string& base, size_t cIndex)
 {
-	switch (fIndex)
+	switch (cIndex)
 	{
-	case 0: base += "\\sessions\\";
+	case 0: base += "/sessions/";
 		break;
-	case 1: base += "\\locations\\";
+	case 1: base += "/locations/";
 		break;
-	case 2: base += "\\characters\\";
+	case 2: base += "/characters/";
 		break;
-	case 3: base += "\\items\\";
+	case 3: base += "/items/";
 		break;
 	}
 }
 
 
-void printFile(const std::string& fileName)
+void printFile(const std::string& filepath)
 {
-	std::ifstream stream(fileName);
+	std::ifstream stream(filepath);
 	if (stream.is_open())
 	{
-		std::string line;
-		while (std::getline(stream, line))
-			std::cout << line << std::endl;
+		/*
+		stream.seekg(0, std::ios::end);
+		size_t size = stream.tellg();
+		stream.seekg(0, std::ios::beg);
+		char* buf = new char[size + 1];
+		stream.read(buf, size);
+		buf[size] = '\0';
+		std::cout << buf;
+		stream.close();
+		delete[] buf;
+		*/
+		
+		for (std::string line; std::getline(stream, line); std::cout << line << '\n');
 	}
 }
 
 
-bool listElements(ARG code, ARG sort)
+bool listElements(ARG code)
 {
-	int group;
+	uint32_t category;
 
 	switch (code)
 	{
-	case ARG::SES:
+	case ARG::SES: category = 0;
 		std::cout << "Sessions----------------------------------\n\n";
-		group = 0;
 		break;
-	case ARG::LOC:
+	case ARG::LOC: category = 1;
 		std::cout << "Locations---------------------------------\n\n";
-		group = 1;
 		break;
-	case ARG::CHA:
+	case ARG::CHA: category = 2;
 		std::cout << "Characters--------------------------------\n\n";
-		group = 2;
 		break;
-	case ARG::ITM:
-		std::cout << "Characters--------------------------------\n\n";
-		group = 3;
+	case ARG::ITM: category = 3;
+		std::cout << "Items-------------------------------------\n\n";
 		break;
 	default:
 		return false;
 	}
 
-	switch (sort)
-	{
-	case ARG::DEF:
-		std::sort(File::Get().elements[group].begin(), File::Get().elements[group].end(),
-			[](const Element& left, const Element& right) -> bool { return left.number > right.number; });
-		break;
-	case ARG::REL:
-		std::sort(File::Get().elements[group].begin(), File::Get().elements[group].end(),
-			[](const Element& left, const Element& right) -> bool { return left.relevance > right.relevance; });
-		break;
-	}
-
-	for (size_t i = 0; i < File::Get().elements[group].size(); i++)
-		std::cout << i << ": " << File::Get().elements[group][i].name << std::endl;
+	for (size_t i = 0; i < File::Category(category).size(); i++)
+		std::cout << i << ": " << File::Category(category)[i].name << std::endl;
 
 	std::cout << "\n------------------------------------------\n\n";
 

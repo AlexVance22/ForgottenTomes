@@ -9,12 +9,12 @@
 #include "Files/CampaignElem.h"
 
 
-static std::vector<std::string> collectRefNames(const std::string& file)
+static std::vector<std::string> collectRefNames(const std::string& filepath)
 {
-	std::ifstream stream(file);
+	std::ifstream stream(filepath);
 	if (!stream.is_open())
 	{
-		std::cout << "failed to open" << std::endl;
+		LOG_ERROR("failed to open file");
 		return {};
 	}
 
@@ -68,8 +68,8 @@ static std::vector<std::pair<std::string, ItemLocation>> findRefs(const std::vec
 			if (it != es.end())
 			{
 				ItemLocation loc;
-				loc.folderIndex = i;
-				loc.elementIndex = it - es.begin();
+				loc.category = i;
+				loc.element = it - es.begin();
 				result.push_back({ t, loc });
 			}
 		}
@@ -82,17 +82,14 @@ static std::vector<std::pair<std::string, ItemLocation>> findRefs(const std::vec
 bool cmdLookup(const std::vector<int>& command)
 {
 	ItemLocation loc;
-	if (!findItem(loc, command, 1))
+	if (!parseLocStr(loc, command, 1))
 		return false;
 
-	std::string path = File::Get().path;
-
-	appendCategory(path, loc.folderIndex);
-
-	path += File::Get().elements[loc.folderIndex][loc.elementIndex].name + '\\' + File::Get().elements[loc.folderIndex][loc.elementIndex].content[loc.componentIndex];
+	std::string path = File::Get().rootdir;
+	appendCategory(path, loc.category);
+	path += File::Category(loc.category)[loc.element].name + '/' + File::Category(loc.category)[loc.element].content[loc.article];
 
 	std::vector<std::string> refTokens = collectRefNames(path + ".txt");
-
 	std::vector<std::pair<std::string, ItemLocation>> refLocs = findRefs(refTokens);
 
 	std::cout << C_CYAN;
@@ -126,7 +123,7 @@ bool cmdLookup(const std::vector<int>& command)
 		if (it != refLocs.end())
 		{
 			std::cout << '\n';
-			File::Selected() = it->second;
+			File::Get().selected = it->second;
 			cmdView({ (int)CMD::VEW, (int)ARG::CRN });
 			return true;
 		}
