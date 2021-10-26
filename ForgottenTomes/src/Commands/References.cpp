@@ -114,7 +114,11 @@ bool cmdLookup(const std::vector<int>& command)
 		std::string index;
 		std::cin.ignore(0);
 		std::getline(std::cin, index);
-		if (strHash(index) == -840099195) return true;
+		if ((CMD)strHash(index) == CMD::EXT)
+		{
+			std::cout << '\n';
+			return true;
+		}
 		int i = stoi(index);
 
 		auto it = std::find_if(refLocs.begin(), refLocs.end(), [&](const std::pair<std::string, ItemLocation>& pair) { return pair.first == refTokens[i]; });
@@ -123,6 +127,7 @@ bool cmdLookup(const std::vector<int>& command)
 		{
 			std::cout << '\n';
 			File::Get().selected = it->second;
+			system("CLS");
 			cmdView({ (int)CMD::VEW, (int)ARG::CRN });
 			return true;
 		}

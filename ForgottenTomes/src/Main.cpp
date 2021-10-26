@@ -137,7 +137,7 @@ std::vector<int> getCommand()
 int main()
 {
 	std::cout << C_RESET;
-
+	system("CLS");
 	bool open = false;
 
 	while (true)

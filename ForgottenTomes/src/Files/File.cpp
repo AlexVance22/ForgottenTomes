@@ -88,7 +88,7 @@ File& File::Get()
 
 bool File::IsSelected()
 {
-	if (Get().selected.category == 4 || Get().selected.element == -1 || Get().selected.article == -1)
+	if (Get().selected.category == 4 || Get().selected.element == -1)
 		return false;
 
 	return true;
