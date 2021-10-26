@@ -8,7 +8,7 @@ enum class ARG;
 
 struct ItemLocation
 {
-	int category = -1;
+	size_t category = 4;
 	int element = -1;
 	int article = -1;
 };
@@ -22,7 +22,6 @@ private:
 public:
 	std::string rootdir;
 	std::string filepath;
-	std::string name;
 
 	ItemLocation selected;
 
@@ -33,9 +32,13 @@ public:
 	void reset();
 
 	static File& Get();
+
 	static bool IsSelected();
 	static std::optional<ItemLocation> Selected();
+
 	static std::vector<Element>& Category(uint32_t category);
+	static Element& Element(ItemLocation loc);
+	static const std::string& Article(ItemLocation loc);
 
 	File(const File&) = delete;
 	void operator=(const File&) = delete;

@@ -40,33 +40,28 @@ static void valueElement(size_t cIndex, int eIndex)
 
 static void renameElement(size_t cIndex, int eIndex)
 {
-	std::string name;
+	std::string path = categoryPath(cIndex);
 
 	std::cout << C_YELLOW << "Old: " << File::Category(cIndex)[eIndex].name << C_RESET << "\nNew: ";
 	std::cin.ignore(0);
+	std::string name;
 	std::getline(std::cin, name);
 
-	std::string base = File::Get().rootdir;
-	appendCategory(base, cIndex);
-
-	std::filesystem::rename(base + File::Category(cIndex)[eIndex].name, base + name);
+	std::filesystem::rename(path + File::Category(cIndex)[eIndex].name, path + name);
 	File::Category(cIndex)[eIndex].name = name;
 }
 
 static void renameArticle(size_t cIndex, int eIndex, int aIndex)
 {
-	std::string name;
+	std::string path = categoryPath(cIndex);
+	path += File::Category(cIndex)[eIndex].name + '/';
 
-	std::cout << C_YELLOW << "Old: " << File::Category(cIndex)[eIndex].content[aIndex] << C_RESET << "\nNew: ";
+	std::cout << C_YELLOW << "Old: " << File::Article({ cIndex, eIndex, aIndex }) << C_RESET << "\nNew: ";
 	std::cin.ignore(0);
+	std::string name;
 	std::getline(std::cin, name);
 
-	std::string base = File::Get().rootdir;
-	appendCategory(base, cIndex);
-
-	base += File::Category(cIndex)[eIndex].name + '/';
-
-	std::filesystem::rename(base + File::Category(cIndex)[eIndex].content[aIndex] + ".txt", base + name + ".txt");
+	std::filesystem::rename(path + File::Article({ cIndex, eIndex, aIndex }) + ".txt", path + name + ".txt");
 	File::Category(cIndex)[eIndex].content[aIndex] = name;
 }
 
@@ -89,9 +84,8 @@ bool cmdEdit(const std::vector<int>& command)
 	if (!parseLocStr(loc, command, 1))
 		return false;
 
-	std::string path = File::Get().rootdir;
-	appendCategory(path, loc.category);
-	path += File::Category(loc.category)[loc.element].name + '/' + File::Category(loc.category)[loc.element].content[loc.article] + ".txt";
+	std::string path = categoryPath(loc.category);
+	path += File::Element(loc).name + '/' + File::Article(loc) + ".txt";
 
 	system((std::string("notepad.exe ") + path).c_str());
 

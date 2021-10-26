@@ -48,16 +48,16 @@ bool File::load(const std::string& filepath)
 		stream >> j;
 
 		for (const auto& s : j["sessions"])
-			elements[0].emplace_back(s);
+			elements[0].emplace_back(0, s);
 
 		for (const auto& l : j["locations"])
-			elements[1].emplace_back(l);
+			elements[1].emplace_back(1, l);
 
 		for (const auto& c : j["characters"])
-			elements[2].emplace_back(c);
+			elements[2].emplace_back(2, c);
 
 		for (const auto& i : j["items"])
-			elements[3].emplace_back(i);
+			elements[3].emplace_back(3, i);
 
 		stream.close();
 
@@ -73,7 +73,6 @@ void File::reset()
 {
 	rootdir.clear();
 	filepath.clear();
-	name.clear();
 
 	for (size_t i = 0; i < 4; i++)
 		elements[i].clear();
@@ -86,9 +85,10 @@ File& File::Get()
 	return instance;
 }
 
+
 bool File::IsSelected()
 {
-	if (Get().selected.category == -1 || Get().selected.element == -1 || Get().selected.article == -1)
+	if (Get().selected.category == 4 || Get().selected.element == -1 || Get().selected.article == -1)
 		return false;
 
 	return true;
@@ -105,7 +105,18 @@ std::optional<ItemLocation> File::Selected()
 	return Get().selected;
 }
 
+
 std::vector<Element>& File::Category(uint32_t category)
 {
 	return Get().elements[category];
+}
+
+Element& File::Element(ItemLocation loc)
+{
+	return Get().elements[loc.category][loc.element];
+}
+
+const std::string& File::Article(ItemLocation loc)
+{
+	return Get().elements[loc.category][loc.element].content[loc.article];
 }

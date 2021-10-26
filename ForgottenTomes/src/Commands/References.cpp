@@ -85,9 +85,8 @@ bool cmdLookup(const std::vector<int>& command)
 	if (!parseLocStr(loc, command, 1))
 		return false;
 
-	std::string path = File::Get().rootdir;
-	appendCategory(path, loc.category);
-	path += File::Category(loc.category)[loc.element].name + '/' + File::Category(loc.category)[loc.element].content[loc.article];
+	std::string path = categoryPath(loc.category);
+	path += File::Element(loc).name + '/' + File::Article(loc);
 
 	std::vector<std::string> refTokens = collectRefNames(path + ".txt");
 	std::vector<std::pair<std::string, ItemLocation>> refLocs = findRefs(refTokens);

@@ -6,8 +6,8 @@
 
 bool parseLocStr(ItemLocation& loc, const std::vector<int>& command, size_t idx);
 
-void appendCategory(std::string& base, size_t cIndex);
+std::string categoryPath(size_t cIndex);
 
-void printFile(const std::string& fileName);
+void printFile(const std::string& filepath);
 
 bool listElements(ARG code);

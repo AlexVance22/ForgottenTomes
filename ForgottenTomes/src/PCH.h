@@ -2,15 +2,12 @@
 
 #include <filesystem>
 #include <algorithm>
+#include <optional>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <future>
 #include <vector>
 #include <string>
-#include <array>
-
-#include <optional>
 
 #ifdef FTOMES_PLATFORM_WINDOWS
 	#include <windows.h>

@@ -1,8 +1,8 @@
 #include "PCH.h"
-
-#include "CoreMacros.h"
-
 #include "Helpers.h"
+
+#include "Files/File.h"
+#include "CoreMacros.h"
 
 
 bool parseLocStr(ItemLocation& loc, const std::vector<int>& command, size_t idx)
@@ -67,44 +67,29 @@ bool parseLocStr(ItemLocation& loc, const std::vector<int>& command, size_t idx)
 	return true;
 }
 
-
-void appendCategory(std::string& base, size_t cIndex)
+std::string categoryPath(size_t cIndex)
 {
+	std::string path = File::Get().rootdir;
 	switch (cIndex)
 	{
-	case 0: base += "/sessions/";
+	case 0: path += "/sessions/";
 		break;
-	case 1: base += "/locations/";
+	case 1: path += "/locations/";
 		break;
-	case 2: base += "/characters/";
+	case 2: path += "/characters/";
 		break;
-	case 3: base += "/items/";
+	case 3: path += "/items/";
 		break;
 	}
+	return path;
 }
-
 
 void printFile(const std::string& filepath)
 {
 	std::ifstream stream(filepath);
 	if (stream.is_open())
-	{
-		/*
-		stream.seekg(0, std::ios::end);
-		size_t size = stream.tellg();
-		stream.seekg(0, std::ios::beg);
-		char* buf = new char[size + 1];
-		stream.read(buf, size);
-		buf[size] = '\0';
-		std::cout << buf;
-		stream.close();
-		delete[] buf;
-		*/
-		
 		for (std::string line; std::getline(stream, line); std::cout << line << '\n');
-	}
 }
-
 
 bool listElements(ARG code)
 {

@@ -6,6 +6,17 @@
 uint32_t Element::count[4] = { 0 };
 
 
+Element::Element(uint32_t _type) : type(_type), number(count[_type]++)
+{ 
+	name = "Element_" + std::to_string(number);
+}
+
+Element::Element(uint32_t _type, const nlohmann::json& data) : type(_type), number(0)
+{
+	deserialize(data);
+}
+
+
 nlohmann::json Element::serialize() const
 {
 	nlohmann::json result;

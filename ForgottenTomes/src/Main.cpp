@@ -10,6 +10,17 @@
 #include "Commands/Editing.h"
 
 
+bool isNumber(const std::string& str)
+{
+	for (char c : str)
+	{
+		if (!std::isdigit(c))
+			return false;
+	}
+	return true;
+}
+
+
 void cmdHelp(const std::vector<int>& command)
 {
 	if (command.size() == 1)
@@ -102,22 +113,13 @@ void cmdHelp(const std::vector<int>& command)
 
 std::vector<int> getCommand()
 {
-	auto isNumber = [](const std::string& str) {
-		for (char c : str)
-		{
-			if (!std::isdigit(c))
-				return false;
-		}
-		return true;
-	};
-
 	std::string cmd;
-	std::vector<int> commands;
 
 	std::cout << ">";
 	std::cin.ignore(0);
 	std::getline(std::cin, cmd);
 	
+	std::vector<int> commands;
 	for (std::stringstream tokens(cmd); tokens >> cmd;)
 	{
 		if (isNumber(cmd))
@@ -125,9 +127,6 @@ std::vector<int> getCommand()
 		else
 			commands.push_back(strHash(cmd));
 	}
-
-	if (commands.size() == 0)
-		commands.push_back(0);
 
 	system("CLS");
 
@@ -145,10 +144,7 @@ int main()
 	{
 		std::vector<int> command = getCommand();
 		if (command.size() == 0)
-		{
-			LOG_ERROR("empty command");
 			continue;
-		}
 
 		switch ((CMD)command[0])
 		{

@@ -2,34 +2,25 @@
 #include "ElementStorage.h"
 
 #include "CoreMacros.h"
-
-#include "Editing.h"
-#include "Utilities.h"
+#include "CMDenums.h"
 
 #include "Files/File.h"
-#include "CMDenums.h"
+#include "Utilities.h"
 #include "Helpers.h"
 
 
 static void addArticle(size_t cIndex, int eIndex, int aIndex)
 {
-	std::string path = File::Get().rootdir;
-	appendCategory(path, cIndex);
+	std::string path = categoryPath(cIndex);
 	Element& e = File::Category(cIndex)[eIndex];
-	size_t size = e.content.size();
-
-	std::string name = size == 0 ? "Brief" : "New Element" + std::to_string(e.content.size());
+	path += e.name + '/';
 
 	if (aIndex == -1)
-	{
-		e.content.emplace_back(name);
-		path += e.name + '/' + e.content[e.content.size() - 1] + ".txt";
-	}
-	else
-	{
-		e.content.emplace(e.content.begin() + aIndex, name);
-		path += e.name + '/' + e.content[aIndex] + ".txt";
-	}
+		aIndex = e.content.size();
+
+	std::string name = e.content.size() == 0 ? "Brief" : "Article_" + std::to_string(e.content.size());
+	e.content.emplace(e.content.begin() + aIndex, name);
+	path += e.content[aIndex] + ".txt";
 
 	std::cout << C_GREEN;
 	viewElement(cIndex, eIndex);
@@ -40,20 +31,14 @@ static void addArticle(size_t cIndex, int eIndex, int aIndex)
 
 static void delArticle(size_t cIndex, int eIndex, int aIndex)
 {
-	std::string path = File::Get().rootdir;
-	appendCategory(path, cIndex);
+	std::string path = categoryPath(cIndex);
 	Element& e = File::Category(cIndex)[eIndex];
 
 	if (aIndex == -1)
-	{
-		path += e.name + "/" + e.content[e.content.size() - 1] + ".txt";
-		e.content.pop_back();
-	}
-	else
-	{
-		path += e.name + "/" + e.content[aIndex] + ".txt";
-		e.content.erase(e.content.begin() + aIndex);
-	}
+		aIndex = e.content.size() - 1;
+
+	path += e.name + "/" + e.content[aIndex] + ".txt";
+	e.content.erase(e.content.begin() + aIndex);
 
 	std::cout << C_RED;
 	viewElement(cIndex, eIndex);
@@ -65,44 +50,25 @@ static void delArticle(size_t cIndex, int eIndex, int aIndex)
 
 static void addElement(size_t cIndex, int eIndex)
 {
-	std::string path = File::Get().rootdir;
-	appendCategory(path, cIndex);
-
 	auto& category = File::Category(cIndex);
 
 	if (eIndex == -1)
-	{
 		eIndex = category.size();
-		const Element& e = category.emplace_back(cIndex);
-		path += e.name;
-	}
-	else
-	{
-		const auto& e = category.emplace(category.begin() + eIndex, cIndex);
-		path += e->name;
-	}
 
-	std::filesystem::create_directories(path);
+	const Element& e = *category.emplace(category.begin() + eIndex, cIndex);
+	std::filesystem::create_directories(categoryPath(cIndex) + e.name);
 	addArticle(cIndex, eIndex, 0);
 }
 
 static void delElement(size_t cIndex, int eIndex)
 {
-	std::string path = File::Get().rootdir;
-	appendCategory(path, cIndex);
-
 	auto& category = File::Category(cIndex);
 
 	if (eIndex == -1)
-	{
-		std::filesystem::remove(path + category[category.size() - 1].name);
-		category.pop_back();
-	}
-	else
-	{
-		std::filesystem::remove_all(path + category[eIndex].name);
-		category.erase(category.begin() + eIndex);
-	}
+		eIndex = category.size() - 1;
+
+	std::filesystem::remove_all(categoryPath(cIndex) + category[eIndex].name);
+	category.erase(category.begin() + eIndex);
 }
 
 
@@ -139,5 +105,5 @@ bool cmdDel(const std::vector<int>& command)
 	listElements((ARG)command[1]);
 	std::cout << C_RESET << '\n';
 
-	return false;
+	return true;
 }
