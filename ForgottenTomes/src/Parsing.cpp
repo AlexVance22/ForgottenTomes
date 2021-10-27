@@ -16,17 +16,6 @@ bool isNumber(const std::string& str)
 }
 
 
-constexpr uint32_t fnv1a_32(const char* str, size_t count)
-{
-	return ((count ? fnv1a_32(str, count - 1) : 2166136261u) ^ str[count]) * 16777619u;
-}
-
-constexpr uint32_t operator"" _hash(const char* str, size_t count)
-{
-	return fnv1a_32(str, count);
-}
-
-
 std::vector<Argument> getCommand()
 {
 	std::string cmd;
@@ -39,7 +28,7 @@ std::vector<Argument> getCommand()
 	{
 		Argument arg;
 		arg.str = cmd;
-		uint32_t hash = fnv1a_32(cmd.c_str(), cmd.size());
+		uint32_t hash = fnv1a(cmd.c_str(), cmd.size());
 
 		if (isNumber(cmd))
 		{
