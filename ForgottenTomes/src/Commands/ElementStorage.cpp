@@ -24,7 +24,7 @@ static void addArticle(size_t cIndex, int eIndex, int aIndex)
 
 	std::cout << C_GREEN;
 	viewElement(cIndex, eIndex);
-	std::cout << '\n' << C_RESET;
+	std::cout << C_RESET << '\n';
 
 	std::ofstream stream(path);
 }
@@ -42,7 +42,7 @@ static void delArticle(size_t cIndex, int eIndex, int aIndex)
 
 	std::cout << C_RED;
 	viewElement(cIndex, eIndex);
-	std::cout << '\n' << C_RESET;
+	std::cout << C_RESET << '\n';
 
 	std::remove(path.c_str());
 }
@@ -50,14 +50,21 @@ static void delArticle(size_t cIndex, int eIndex, int aIndex)
 
 static void addElement(size_t cIndex, int eIndex)
 {
+	std::string path = categoryPath(cIndex);
 	auto& category = File::Category(cIndex);
 
 	if (eIndex == -1)
 		eIndex = category.size();
 
-	const Element& e = *category.emplace(category.begin() + eIndex, cIndex);
-	std::filesystem::create_directories(categoryPath(cIndex) + e.name);
-	addArticle(cIndex, eIndex, 0);
+	Element& e = *category.emplace(category.begin() + eIndex, cIndex);
+	e.content.emplace_back("Brief");
+
+	std::filesystem::create_directories(path + e.name);
+	std::ofstream stream(path + e.name + "/Brief.txt");
+
+	std::cout << C_GREEN;
+	viewCategory(cIndex);
+	std::cout << C_RESET;
 }
 
 static void delElement(size_t cIndex, int eIndex)
@@ -69,6 +76,10 @@ static void delElement(size_t cIndex, int eIndex)
 
 	std::filesystem::remove_all(categoryPath(cIndex) + category[eIndex].name);
 	category.erase(category.begin() + eIndex);
+
+	std::cout << C_RED;
+	viewCategory(cIndex);
+	std::cout << C_RESET;
 }
 
 
@@ -83,10 +94,6 @@ bool cmdAdd(const std::vector<Argument>& command)
 	else
 		addArticle(loc.category, loc.element, loc.article);
 
-	std::cout << C_GREEN;
-	listElements((size_t)command[1].numerical);
-	std::cout << C_RESET << '\n';
-
 	return true;
 }
 
@@ -100,10 +107,6 @@ bool cmdDel(const std::vector<Argument>& command)
 		delElement(loc.category, loc.element);
 	else
 		delArticle(loc.category, loc.element, loc.article);
-
-	std::cout << C_RED;
-	listElements((size_t)command[1].numerical);
-	std::cout << C_RESET << '\n';
 
 	return true;
 }

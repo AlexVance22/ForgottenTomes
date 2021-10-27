@@ -5,11 +5,25 @@
 #include "Files/File.h"
 
 
-bool isNumber(const std::string& str)
+constexpr uint32_t fnv1a(const char* str, size_t count)
 {
-	for (char c : str)
+	uint32_t hash = 2166136261u;
+
+	for (size_t i = 0; i < count; i++)
+		hash = (hash ^ str[i]) * 16777619u;
+
+	return hash;
+}
+
+
+bool isInt(const std::string& str)
+{
+	if (!std::isdigit(str[0]) && str[0] != '-')
+		return false;
+
+	for (size_t i = 1; i < str.size(); i++)
 	{
-		if (!std::isdigit(c))
+		if (!std::isdigit(str[i]))
 			return false;
 	}
 	return true;
@@ -30,7 +44,7 @@ std::vector<Argument> getCommand()
 		arg.str = cmd;
 		uint32_t hash = fnv1a(cmd.c_str(), cmd.size());
 
-		if (isNumber(cmd))
+		if (isInt(cmd))
 		{
 			arg.type = Argument::Type::Index;
 			arg.numerical = std::stoi(cmd);
@@ -143,7 +157,7 @@ std::vector<Argument> getCommand()
 		command.push_back(arg);
 	}
 
-	system("CLS");
+	//system("CLS");
 
 	return command;
 }

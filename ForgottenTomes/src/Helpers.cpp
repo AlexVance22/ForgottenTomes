@@ -59,27 +59,3 @@ void printFile(const std::string& filepath)
 	if (stream.is_open())
 		for (std::string line; std::getline(stream, line); std::cout << line << '\n');
 }
-
-void listElements(size_t cIndex)
-{
-	switch (cIndex)
-	{
-	case 0:
-		std::cout << "Sessions----------------------------------\n\n";
-		break;
-	case 1:
-		std::cout << "Locations---------------------------------\n\n";
-		break;
-	case 2:
-		std::cout << "Characters--------------------------------\n\n";
-		break;
-	case 3:
-		std::cout << "Items-------------------------------------\n\n";
-		break;
-	}
-
-	for (size_t i = 0; i < File::Category(cIndex).size(); i++)
-		std::cout << i << ": " << File::Category(cIndex)[i].name << std::endl;
-
-	std::cout << "\n------------------------------------------\n\n";
-}

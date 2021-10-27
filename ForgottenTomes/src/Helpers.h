@@ -11,5 +11,3 @@ bool parseLocStr(ItemLocation& loc, const std::vector<Argument>& command, size_t
 std::string categoryPath(size_t cIndex);
 
 void printFile(const std::string& filepath);
-
-void listElements(size_t cIndex);

@@ -2,15 +2,14 @@
 
 struct Argument
 {
-	enum class Type { Command, Category, Index, Special };
-	Type type;
-
+	enum class Type { None = -1, Command, Category, Index, Special };
+	Type type = Type::None;
+	int64_t numerical = 0;
 	std::string str;
-	int64_t numerical;
 };
 
 
-constexpr uint32_t fnv1a(const char* str, size_t count)
+constexpr uint32_t operator ""_hash(const char* str, size_t count)
 {
 	uint32_t hash = 2166136261u;
 
@@ -20,12 +19,7 @@ constexpr uint32_t fnv1a(const char* str, size_t count)
 	return hash;
 }
 
-constexpr uint32_t operator ""_hash(const char* str, size_t count)
-{
-	return fnv1a(str, count);
-}
 
-
-bool isNumber(const std::string& str);
+bool isInt(const std::string& str);
 
 std::vector<Argument> getCommand();
