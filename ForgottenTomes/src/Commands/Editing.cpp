@@ -1,8 +1,8 @@
 #include "PCH.h"
 #include "Editing.h"
 
-#include "CoreMacros.h"
-#include "Files/File.h"
+#include "core/Macros.h"
+#include "files/File.h"
 
 #include "Helpers.h"
 #include "Parsing.h"
@@ -72,13 +72,11 @@ bool cmdEdit(const std::vector<Argument>& command)
 	if (!parseLocStr(loc, command, 1))
 		return false;
 
-	/*
 	if (command[command.size() - 1].numerical == "relevance"_hash)
 	{
 		valueElement(loc.category, loc.element);
 		return true;
 	}
-	*/
 
 	std::string path = categoryPath(loc.category);
 	path += File::Element(loc).name + '/' + File::Article(loc) + ".txt";

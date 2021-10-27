@@ -1,8 +1,8 @@
 #include "PCH.h"
 #include "FileManagement.h"
 
-#include "CoreMacros.h"
-#include "Files/File.h"
+#include "core/Macros.h"
+#include "files/File.h"
 
 #include "Files/Dialogs.h"
 

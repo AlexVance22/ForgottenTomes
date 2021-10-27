@@ -1,7 +1,7 @@
 #include "PCH.h"
 #include "Help.h"
 
-#include "CoreMacros.h"
+#include "core/Macros.h"
 
 #include "Parsing.h"
 

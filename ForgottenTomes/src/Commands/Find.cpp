@@ -1,7 +1,7 @@
 #include "PCH.h"
 #include "Find.h"
 
-#include "Files/File.h"
+#include "files/File.h"
 
 
 void cmdFind(const std::vector<int>& command)

@@ -2,7 +2,7 @@
 
 struct Argument
 {
-	enum class Type { None = -1, Command, Category, Index, Special };
+	enum class Type { None = -1, Command, Category, Index, Bool, Special };
 	Type type = Type::None;
 	int64_t numerical = 0;
 	std::string str;

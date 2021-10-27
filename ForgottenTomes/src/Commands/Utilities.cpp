@@ -1,8 +1,8 @@
 #include "PCH.h"
 #include "Utilities.h"
 
-#include "CoreMacros.h"
-#include "Files/File.h"
+#include "core/Macros.h"
+#include "files/File.h"
 
 #include "Helpers.h"
 #include "Parsing.h"

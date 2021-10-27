@@ -1,8 +1,8 @@
 #include "PCH.h"
 #include "ElementStorage.h"
 
-#include "CoreMacros.h"
-#include "Files/File.h"
+#include "core/Macros.h"
+#include "files/File.h"
 
 #include "Utilities.h"
 #include "Helpers.h"

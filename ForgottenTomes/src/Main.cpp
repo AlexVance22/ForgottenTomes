@@ -1,16 +1,37 @@
 #include "PCH.h"
 
-#include "CoreMacros.h"
-#include "Files/File.h"
+#include "core/Macros.h"
+#include "files/File.h"
 
-#include "Commands/FileManagement.h"
-#include "Commands/ElementStorage.h"
-#include "Commands/References.h"
-#include "Commands/Utilities.h"
-#include "Commands/Editing.h"
-#include "Commands/Help.h"
+#include "commands/FileManagement.h"
+#include "commands/ElementStorage.h"
+#include "commands/References.h"
+#include "commands/Utilities.h"
+#include "commands/Editing.h"
+#include "commands/Help.h"
 
 #include "Parsing.h"
+
+
+//bug: system function ignoring if condition
+void cmdClear(const std::vector<Argument>& command, bool& cls)
+{
+	if (command.size() == 1)
+	{
+		system("CLS");
+		return;
+	}
+
+	if (command[1].type != Argument::Type::Bool && command[1].type != Argument::Type::Index)
+	{
+		LOG_ERROR("invalid boolean value");
+		return;
+	}
+
+	cls = (bool)command[1].numerical;
+	if (cls)
+		system("CLS");
+}
 
 
 int main()
@@ -18,12 +39,16 @@ int main()
 	std::cout << C_RESET;
 	system("CLS");
 	bool open = false;
+	bool cls = true;
 
 	while (true)
 	{
 		std::vector<Argument> command = getCommand();
 		if (command.size() == 0)
 			continue;
+
+		if (cls)
+			system("CLS");
 
 		switch (command[0].numerical)
 		{
@@ -41,6 +66,9 @@ int main()
 
 		switch (command[0].numerical)
 		{
+		case "cls"_hash:
+			cmdClear(command, cls);
+			break;
 		case "hlp"_hash:
 			cmdHelp(command);
 			break;

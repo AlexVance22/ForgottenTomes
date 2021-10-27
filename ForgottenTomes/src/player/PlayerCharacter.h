@@ -1,7 +1,8 @@
 #pragma once
 
-
 typedef const uint32_t Modifier;
+
+
 struct Accumulable
 {
 	const uint32_t maximum;

@@ -1,8 +1,8 @@
 #include "PCH.h"
 #include "Parsing.h"
 
-#include "CoreMacros.h"
-#include "Files/File.h"
+#include "core/Macros.h"
+#include "files/File.h"
 
 
 constexpr uint32_t fnv1a(const char* str, size_t count)
@@ -59,6 +59,10 @@ std::vector<Argument> getCommand()
 
 		switch (hash)
 		{
+		case "cls"_hash:
+			arg.type = Argument::Type::Command;
+			arg.numerical = "cls"_hash;
+			break;
 		case "hlp"_hash: case "help"_hash:
 			arg.type = Argument::Type::Command;
 			arg.numerical = "hlp"_hash;
@@ -144,6 +148,15 @@ std::vector<Argument> getCommand()
 			arg.numerical = -1;
 			break;
 
+		case "true"_hash:
+			arg.type = Argument::Type::Bool;
+			arg.numerical = 1;
+			break;
+		case "false"_hash:
+			arg.type = Argument::Type::Bool;
+			arg.numerical = 0;
+			break;
+
 		case "a"_hash: case "art"_hash: case "article"_hash:
 			arg.type = Argument::Type::Special;
 			arg.numerical = 0;
@@ -156,8 +169,6 @@ std::vector<Argument> getCommand()
 
 		command.push_back(arg);
 	}
-
-	//system("CLS");
 
 	return command;
 }
