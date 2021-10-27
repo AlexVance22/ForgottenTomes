@@ -2,10 +2,10 @@
 #include "Utilities.h"
 
 #include "CoreMacros.h"
-
 #include "Files/File.h"
-#include "CMDenums.h"
+
 #include "Helpers.h"
+#include "Parsing.h"
 
 
 void viewElement(size_t cIndex, int eIndex)
@@ -33,17 +33,14 @@ void viewArticle(size_t cIndex, int eIndex, int aIndex)
 }
 
 
-void cmdList(const std::vector<int>& command)
+void cmdList(const std::vector<Argument>& command)
 {
 	std::cout << C_CYAN;
-
-	if (!listElements((ARG)command[1]))
-		LOG_ERROR("invalid element type");
-
+	listElements((size_t)command[1].numerical);
 	std::cout << C_RESET;
 }
 
-bool cmdSelect(const std::vector<int>& command)
+bool cmdSelect(const std::vector<Argument>& command)
 {
 	ItemLocation loc;
 	if (!parseLocStr(loc, command, 1))
@@ -58,7 +55,7 @@ bool cmdSelect(const std::vector<int>& command)
 	return true;
 }
 
-bool cmdView(const std::vector<int>& command)
+bool cmdView(const std::vector<Argument>& command)
 {
 	ItemLocation loc;
 	if (!parseLocStr(loc, command, 1))

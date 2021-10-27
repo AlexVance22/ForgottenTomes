@@ -2,10 +2,10 @@
 #include "Editing.h"
 
 #include "CoreMacros.h"
-
 #include "Files/File.h"
-#include "CMDenums.h"
+
 #include "Helpers.h"
+#include "Parsing.h"
 
 
 static void valueElement(size_t cIndex, int eIndex)
@@ -66,23 +66,19 @@ static void renameArticle(size_t cIndex, int eIndex, int aIndex)
 }
 
 
-bool cmdEdit(const std::vector<int>& command)
+bool cmdEdit(const std::vector<Argument>& command)
 {
 	ItemLocation loc;
+	if (!parseLocStr(loc, command, 1))
+		return false;
 
 	/*
-	if ((ARG)command[command.size() - 1] == ARG::REL)
+	if (command[command.size() - 1].numerical == "relevance"_hash)
 	{
-		if (!parseLocStr(loc, command, 1))
-			return false;
-
 		valueElement(loc.category, loc.element);
 		return true;
 	}
 	*/
-
-	if (!parseLocStr(loc, command, 1))
-		return false;
 
 	std::string path = categoryPath(loc.category);
 	path += File::Element(loc).name + '/' + File::Article(loc) + ".txt";
@@ -92,7 +88,7 @@ bool cmdEdit(const std::vector<int>& command)
 	return true;
 }
 
-bool cmdRename(const std::vector<int>& command)
+bool cmdRename(const std::vector<Argument>& command)
 {
 	ItemLocation loc;
 	if (!parseLocStr(loc, command, 1))

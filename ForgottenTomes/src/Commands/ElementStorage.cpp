@@ -2,11 +2,11 @@
 #include "ElementStorage.h"
 
 #include "CoreMacros.h"
-#include "CMDenums.h"
-
 #include "Files/File.h"
+
 #include "Utilities.h"
 #include "Helpers.h"
+#include "Parsing.h"
 
 
 static void addArticle(size_t cIndex, int eIndex, int aIndex)
@@ -72,7 +72,7 @@ static void delElement(size_t cIndex, int eIndex)
 }
 
 
-bool cmdAdd(const std::vector<int>& command)
+bool cmdAdd(const std::vector<Argument>& command)
 {
 	ItemLocation loc;
 	if (!parseLocStr(loc, command, 1))
@@ -84,13 +84,13 @@ bool cmdAdd(const std::vector<int>& command)
 		addArticle(loc.category, loc.element, loc.article);
 
 	std::cout << C_GREEN;
-	listElements((ARG)command[1]);
+	listElements((size_t)command[1].numerical);
 	std::cout << C_RESET << '\n';
 
 	return true;
 }
 
-bool cmdDel(const std::vector<int>& command)
+bool cmdDel(const std::vector<Argument>& command)
 {
 	ItemLocation loc;
 	if (!parseLocStr(loc, command, 1))
@@ -102,7 +102,7 @@ bool cmdDel(const std::vector<int>& command)
 		delArticle(loc.category, loc.element, loc.article);
 
 	std::cout << C_RED;
-	listElements((ARG)command[1]);
+	listElements((size_t)command[1].numerical);
 	std::cout << C_RESET << '\n';
 
 	return true;

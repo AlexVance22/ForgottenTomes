@@ -10,7 +10,7 @@ struct ItemLocation
 {
 	size_t category = 4;
 	int element = -1;
-	int article = -1;
+	int article = -2;
 };
 
 

@@ -2,11 +2,23 @@
 #include "References.h"
 
 #include "CoreMacros.h"
-
 #include "Files/File.h"
+
 #include "Helpers.h"
+#include "Parsing.h"
+
 #include "Utilities.h"
-#include "Files/CampaignElem.h"
+
+
+constexpr uint32_t fnv1a_32(const char* str, size_t count)
+{
+	return ((count ? fnv1a_32(str, count - 1) : 2166136261u) ^ str[count]) * 16777619u;
+}
+
+constexpr uint32_t operator"" _hash(const char* str, size_t count)
+{
+	return fnv1a_32(str, count);
+}
 
 
 static std::vector<std::string> collectRefNames(const std::string& filepath)
@@ -79,7 +91,7 @@ static std::vector<std::pair<std::string, ItemLocation>> findRefs(const std::vec
 }
 
 
-bool cmdLookup(const std::vector<int>& command)
+bool cmdLookup(const std::vector<Argument>& command)
 {
 	ItemLocation loc;
 	if (!parseLocStr(loc, command, 1))
@@ -114,7 +126,7 @@ bool cmdLookup(const std::vector<int>& command)
 		std::string index;
 		std::cin.ignore(0);
 		std::getline(std::cin, index);
-		if ((CMD)strHash(index) == CMD::EXT)
+		if (index == "exit")
 		{
 			std::cout << '\n';
 			return true;
@@ -128,7 +140,10 @@ bool cmdLookup(const std::vector<int>& command)
 			std::cout << '\n';
 			File::Get().selected = it->second;
 			system("CLS");
-			cmdView({ (int)CMD::VEW, (int)ARG::CRN });
+			std::cout << C_CYAN;
+			ItemLocation sel = it->second;
+			viewElement(sel.category, sel.element);
+			std::cout << "\n-------------------------------------------\n\n" << C_RESET;
 			return true;
 		}
 		else

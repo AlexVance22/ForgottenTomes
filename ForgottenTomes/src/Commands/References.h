@@ -1,4 +1,6 @@
 #pragma once
 
+struct Argument;
 
-bool cmdLookup(const std::vector<int>& command);
+
+bool cmdLookup(const std::vector<Argument>& command);
