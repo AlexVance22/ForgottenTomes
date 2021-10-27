@@ -31,6 +31,50 @@ void cmdClear(const std::vector<Argument>& command, bool& cls)
 	cls = (bool)command[1].numerical;
 	if (cls)
 		system("CLS");
+
+	std::ifstream istream("res/startup.json");
+	if (istream.is_open())
+	{
+		nlohmann::json j;
+		istream >> j;
+		istream.close();
+		j["clearscreen"] = cls;
+
+		std::ofstream ostream("res/startup.json", std::ios::trunc);
+		if (ostream.is_open())
+		{
+			ostream << j;
+			ostream.close();
+		}
+	}
+}
+
+
+bool startup(bool& cls)
+{
+	std::ifstream stream("res/startup.json");
+	if (stream.is_open())
+	{
+		nlohmann::json j;
+		stream >> j;
+		stream.close();
+
+		cls = j["clearscreen"];
+
+		if (j["lastfile"] == "empty")
+			return false;
+
+		if (!File::Get().load(j["lastfile"]))
+		{
+			LOG_ERROR("failed to reopen last workspace");
+			return false;
+		}
+
+		std::cout << "Reopened last workspace\n";
+		return true;
+	}
+	LOG_ERROR("startup file missing");
+	return false;
 }
 
 
@@ -38,8 +82,8 @@ int main()
 {
 	std::cout << C_RESET;
 	system("CLS");
-	bool open = false;
 	bool cls = true;
+	bool open = startup(cls);
 
 	while (true)
 	{
@@ -52,7 +96,7 @@ int main()
 
 		switch (command[0].numerical)
 		{
-		case "new"_hash: case "opn"_hash: case "hlp"_hash:
+		case "new"_hash: case "opn"_hash: case "hlp"_hash: case "cls"_hash:
 			break;
 		case "ext"_hash:
 			return 0;
@@ -66,6 +110,9 @@ int main()
 
 		switch (command[0].numerical)
 		{
+		case "dir"_hash:
+			std::cout << File::Get().filepath << '\n';
+			break;
 		case "cls"_hash:
 			cmdClear(command, cls);
 			break;
@@ -107,6 +154,10 @@ int main()
 		case "opn"_hash:
 			if (cmdOpen())
 				open = true;
+			break;
+		case "close"_hash:
+			cmdClose();
+			open = false;
 			break;
 		default:
 			LOG_ERROR("unrecognised command");

@@ -24,4 +24,4 @@
 #define C_RESET "\033[0m"
 
 
-#define LOG_ERROR(message) std::cout << C_RED << "--------------------\n\nERROR: " << message << "\n\n--------------------\n" << C_RESET
+#define LOG_ERROR(message) std::cout << C_RED << "--------------------\nERROR: " << message << "\n--------------------\n" << C_RESET

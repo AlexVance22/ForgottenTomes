@@ -4,6 +4,26 @@
 #include "core/Macros.h"
 #include "files/File.h"
 
+#define CMD_ONE_ARG(sname) case sname##_hash: \
+	arg.type = Argument::Type::Command; \
+	arg.numerical = sname##_hash; \
+	break;
+
+#define CMD_TWO_ARG(sname, lname) case sname##_hash: case lname##_hash: \
+	arg.type = Argument::Type::Command; \
+	arg.numerical = sname##_hash; \
+	break;
+
+#define CATEGORY(letter, sname, lname, idx) case letter##_hash: case sname##_hash: case lname##_hash: \
+	arg.type = Argument::Type::Category; \
+	arg.numerical = idx; \
+	break; \
+
+#define GENERAL(name, argtype, num) case name##_hash: \
+	arg.type = Argument::Type::argtype; \
+	arg.numerical = num; \
+	break;
+
 
 constexpr uint32_t fnv1a(const char* str, size_t count)
 {
@@ -59,71 +79,27 @@ std::vector<Argument> getCommand()
 
 		switch (hash)
 		{
-		case "cls"_hash:
-			arg.type = Argument::Type::Command;
-			arg.numerical = "cls"_hash;
-			break;
-		case "hlp"_hash: case "help"_hash:
-			arg.type = Argument::Type::Command;
-			arg.numerical = "hlp"_hash;
-			break;
-		case "lst"_hash: case "list"_hash:
-			arg.type = Argument::Type::Command;
-			arg.numerical = "lst"_hash;
-			break;
-		case "slt"_hash: case "select"_hash:
-			arg.type = Argument::Type::Command;
-			arg.numerical = "slt"_hash;
-			break;
-		case "vew"_hash: case "view"_hash:
-			arg.type = Argument::Type::Command;
-			arg.numerical = "vew"_hash;
-			break;
-		case "lkp"_hash: case "lookup"_hash:
-			arg.type = Argument::Type::Command;
-			arg.numerical = "lkp"_hash;
-			break;
-		case "add"_hash:
-			arg.type = Argument::Type::Command;
-			arg.numerical = "add"_hash;
-			break;
-		case "del"_hash:
-			arg.type = Argument::Type::Command;
-			arg.numerical = "del"_hash;
-			break;
-		case "edt"_hash: case "edit"_hash:
-			arg.type = Argument::Type::Command;
-			arg.numerical = "edt"_hash;
-			break;
-		case "rnm"_hash: case "rename"_hash:
-			arg.type = Argument::Type::Command;
-			arg.numerical = "rnm"_hash;
-			break;
-		case "new"_hash:
-			arg.type = Argument::Type::Command;
-			arg.numerical = "new"_hash;
-			break;
-		case "opn"_hash: case "open"_hash:
-			arg.type = Argument::Type::Command;
-			arg.numerical = "opn"_hash;
-			break;
+		CMD_ONE_ARG("dir")
+		CMD_ONE_ARG("cls")
+		CMD_TWO_ARG("hlp", "help")
+		CMD_TWO_ARG("lst", "list")
+		CMD_TWO_ARG("slt", "select")
+		CMD_TWO_ARG("vew", "view")
+		CMD_TWO_ARG("lkp", "lookup")
+		CMD_ONE_ARG("add")
+		CMD_ONE_ARG("del")
+		CMD_TWO_ARG("edt", "edit")
+		CMD_TWO_ARG("rnm", "rename")
+		CMD_ONE_ARG("new")
+		CMD_TWO_ARG("opn", "open")
+		CMD_ONE_ARG("close")
+		CMD_TWO_ARG("ext", "exit")
 
-		case "s"_hash: case "ses"_hash: case "session"_hash:
-			arg.type = Argument::Type::Category;
-			arg.numerical = 0;
-			break;
-		case "l"_hash: case "loc"_hash: case "location"_hash:
-			arg.type = Argument::Type::Category;
-			arg.numerical = 1;
-			break;
-		case "c"_hash: case "cha"_hash: case "character"_hash:
-			arg.type = Argument::Type::Category;
-			arg.numerical = 2;
-			break;
-		case "i"_hash: case "itm"_hash: case "item"_hash:
-			arg.type = Argument::Type::Category;
-			arg.numerical = 3;
-			break;
+		CATEGORY("s", "ses", "session", 0)
+		CATEGORY("l", "loc", "location", 1)
+		CATEGORY("c", "cha", "character", 2)
+		CATEGORY("i", "itm", "item", 3)
+
 		case "."_hash: {
 			arg.type = Argument::Type::Category;
 			auto sel = File::Selected();
@@ -143,28 +119,16 @@ std::vector<Argument> getCommand()
 			}
 			break; }
 
-		case "end"_hash:
-			arg.type = Argument::Type::Index;
-			arg.numerical = -1;
-			break;
-
-		case "true"_hash:
-			arg.type = Argument::Type::Bool;
-			arg.numerical = 1;
-			break;
-		case "false"_hash:
-			arg.type = Argument::Type::Bool;
-			arg.numerical = 0;
-			break;
+		GENERAL("end", Index, -1)
+		GENERAL("true", Bool, 1)
+		GENERAL("false", Bool, 0)
 
 		case "a"_hash: case "art"_hash: case "article"_hash:
 			arg.type = Argument::Type::Special;
 			arg.numerical = 0;
 			break;
-		case "*"_hash:
-			arg.type = Argument::Type::Special;
-			arg.numerical = 1;
-			break;
+
+		GENERAL("*", Special, 1)
 		}
 
 		command.push_back(arg);
