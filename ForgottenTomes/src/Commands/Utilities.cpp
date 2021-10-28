@@ -8,6 +8,34 @@
 #include "Parsing.h"
 
 
+static bool JsonFileEditLoc(const std::string& filepath, const std::string& key, ItemLocation loc)
+{
+	std::ifstream istream("res/startup.json");
+	if (istream.is_open())
+	{
+		nlohmann::json j;
+		istream >> j;
+		istream.close();
+		if (loc.element == -1)
+			j[key] = nullptr;
+		else
+		{
+			j[key]["category"] = loc.category;
+			j[key]["element"] = loc.element;
+		}
+
+		std::ofstream ostream("res/startup.json", std::ios::trunc);
+		if (ostream.is_open())
+		{
+			ostream << j;
+			ostream.close();
+			return true;
+		}
+	}
+	return false;
+}
+
+
 void viewCategory(size_t cIndex)
 {
 	switch (cIndex)
@@ -66,6 +94,49 @@ void cmdList(const std::vector<Argument>& command)
 
 bool cmdSelect(const std::vector<Argument>& command)
 {
+	if (command.size() == 1)
+	{
+		auto sel = File::Selected();
+		if (sel)
+		{
+			switch (sel.value().category)
+			{
+			case 0:
+				std::cout << "Session ";
+				break;
+			case 1:
+				std::cout << "Location ";
+				break;
+			case 2:
+				std::cout << "Character ";
+				break;
+			case 3:
+				std::cout << "Item ";
+				break;
+			}
+			std::cout << sel.value().element << " -> " << File::Element(sel.value()).name << "\n\n";
+		}
+		else
+			std::cout << "No element selected\n\n";
+
+		return true;
+	}
+
+	if (command.size() == 2)
+	{
+		if (command[1].type != Argument::Type::Special && command[1].numerical != 2)
+		{
+			LOG_ERROR("location not found");
+			return false;
+		}
+		File::Get().selected.category = 4;
+		File::Get().selected.element = -1;
+		File::Get().selected.article = -2;
+
+		if (!JsonFileEditLoc("res/startup.json", "selected", ItemLocation()))
+			return false;
+	}
+
 	ItemLocation loc;
 	if (!parseLocStr(loc, command, 1))
 		return false;
@@ -75,6 +146,9 @@ bool cmdSelect(const std::vector<Argument>& command)
 	std::cout << C_CYAN;
 	viewElement(loc.category, loc.element);
 	std::cout << "------------------------------------------\n\n" << C_RESET;
+
+	if (!JsonFileEditLoc("res/startup.json", "selected", loc))
+		return false;
 
 	return true;
 }

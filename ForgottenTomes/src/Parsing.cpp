@@ -129,6 +129,7 @@ std::vector<Argument> getCommand()
 			break;
 
 		GENERAL("*", Special, 1)
+		GENERAL("none", Special, 2)
 		}
 
 		command.push_back(arg);

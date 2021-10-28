@@ -61,6 +61,13 @@ bool startup(bool& cls)
 
 		cls = j["clearscreen"];
 
+		auto& sel = File::Get().selected;
+		if (!j["selected"].is_null())
+		{
+			sel.category = j["selected"]["category"];
+			sel.element = j["selected"]["element"];
+		}
+
 		if (j["lastfile"] == "empty")
 			return false;
 
