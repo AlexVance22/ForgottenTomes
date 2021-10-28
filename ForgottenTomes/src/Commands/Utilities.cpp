@@ -135,6 +135,8 @@ bool cmdSelect(const std::vector<Argument>& command)
 
 		if (!JsonFileEditLoc("res/startup.json", "selected", ItemLocation()))
 			return false;
+
+		return true;
 	}
 
 	ItemLocation loc;
