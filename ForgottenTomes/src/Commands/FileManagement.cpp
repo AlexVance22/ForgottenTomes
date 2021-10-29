@@ -7,7 +7,8 @@
 #include "Files/Dialogs.h"
 
 
-static bool JsonFileChangeStr(const std::string& filepath, const std::string& key, const std::string& val)
+template<typename Ty>
+static bool StartupChangeVal(const std::string& filepath, const std::string& key, const Ty& val)
 {
 	std::ifstream istream("res/startup.json");
 	if (istream.is_open())
@@ -49,7 +50,7 @@ bool cmdCreate()
 	File::Get().rootdir = rootdir;
 	File::Get().filepath = filepath;
 
-	if (!JsonFileChangeStr("res/startup.json", "lastfile", filepath))
+	if (!StartupChangeVal("res/startup.json", "lastfile", filepath))
 	{
 		LOG_ERROR("startup file missing");
 		return false;
@@ -70,7 +71,7 @@ bool cmdOpen()
 		return false;
 	}
 
-	if (!JsonFileChangeStr("res/startup.json", "lastfile", filepath))
+	if (!StartupChangeVal("res/startup.json", "lastfile", filepath))
 	{
 		LOG_ERROR("startup file missing");
 		return false;
@@ -88,7 +89,12 @@ void cmdClose()
 {
 	File::Get().reset();
 
-	if (!JsonFileChangeStr("res/startup.json", "lastfile", "empty"))
+	if (!StartupChangeVal("res/startup.json", "lastfile", "empty"))
+	{
+		LOG_ERROR("startup file missing");
+		return;
+	}
+	if (!StartupChangeVal("res/startup.json", "selected", nullptr))
 	{
 		LOG_ERROR("startup file missing");
 		return;

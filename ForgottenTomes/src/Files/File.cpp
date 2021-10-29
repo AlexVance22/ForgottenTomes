@@ -72,6 +72,7 @@ void File::reset()
 {
 	rootdir.clear();
 	filepath.clear();
+	selected = ItemLocation();
 
 	for (size_t i = 0; i < 4; i++)
 		elements[i].clear();

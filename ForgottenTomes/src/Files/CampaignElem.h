@@ -3,8 +3,6 @@
 
 struct Element
 {
-	static uint32_t count[4];
-
 	uint32_t type;
 	uint32_t number;
 	std::string name;
@@ -14,7 +12,7 @@ struct Element
 	Relevance relevance = Relevance::Invalid;
 
 
-	Element(uint32_t _type);
+	Element(uint32_t _type, uint32_t _number);
 	Element(uint32_t _type, const nlohmann::json& data);
 
 	nlohmann::json serialize() const;

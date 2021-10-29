@@ -56,7 +56,7 @@ static void addElement(size_t cIndex, int eIndex)
 	if (eIndex == -1)
 		eIndex = category.size();
 
-	Element& e = *category.emplace(category.begin() + eIndex, cIndex);
+	Element& e = *category.emplace(category.begin() + eIndex, cIndex, category.size());
 	e.content.emplace_back("Brief");
 
 	std::filesystem::create_directories(path + e.name);

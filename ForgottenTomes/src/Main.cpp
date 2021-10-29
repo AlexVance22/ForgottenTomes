@@ -118,7 +118,7 @@ int main()
 		switch (command[0].numerical)
 		{
 		case "dir"_hash:
-			std::cout << File::Get().filepath << '\n';
+			std::cout << File::Get().rootdir << '\n';
 			break;
 		case "cls"_hash:
 			cmdClear(command, cls);

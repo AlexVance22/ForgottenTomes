@@ -3,10 +3,7 @@
 #include "CampaignElem.h"
 
 
-uint32_t Element::count[4] = { 0 };
-
-
-Element::Element(uint32_t _type) : type(_type), number(count[_type]++)
+Element::Element(uint32_t _type, uint32_t _number) : type(_type), number(_number)
 { 
 	name = "Element_" + std::to_string(number);
 }
@@ -38,6 +35,4 @@ void Element::deserialize(const nlohmann::json& data)
 
 	for (const auto& ct : data["content"])
 		content.push_back(ct);
-
-	count[type]++;
 }

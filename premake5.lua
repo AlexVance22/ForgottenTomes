@@ -26,7 +26,7 @@ project "ForgottenTomes"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"../ForgottenTomes/Dependencies"
+		"../ForgottenTomes/vendor"
 	}
 
 	filter "system:windows"
