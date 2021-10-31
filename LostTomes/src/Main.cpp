@@ -169,5 +169,7 @@ int main()
 		default:
 			LOG_ERROR("unrecognised command");
 		}
+
+		std::cout.flush();
 	}
 }

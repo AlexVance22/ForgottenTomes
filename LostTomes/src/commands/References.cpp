@@ -42,7 +42,7 @@ static std::vector<std::string> collectRefNames(const std::string& filepath)
 
 				if (!foundEnd && !(stream >> token))
 				{
-					std::cout << "---\nERROR: end of reference token \']\' not found\n---" << std::endl;
+					LOG_ERROR("end of reference token ']' not found");
 					return {};
 				}
 			}

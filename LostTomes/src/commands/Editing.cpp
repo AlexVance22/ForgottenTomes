@@ -78,10 +78,10 @@ bool cmdEdit(const std::vector<Argument>& command)
 		return true;
 	}
 
-	std::string path = categoryPath(loc.category);
-	path += File::Element(loc).name + '/' + File::Article(loc) + ".txt";
+	std::string path = '\"' + categoryPath(loc.category);
+	path += File::Element(loc).name + '/' + File::Article(loc) + ".txt\"";
 
-	system((std::string("notepad.exe ") + path).c_str());
+	system(path.c_str());
 
 	return true;
 }

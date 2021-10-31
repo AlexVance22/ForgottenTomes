@@ -14,6 +14,11 @@ bool parseLocStr(ItemLocation& loc, const std::vector<Argument>& command, size_t
 		LOG_ERROR("category argument not found");
 		return false;
 	}
+	if (command[idx].numerical < 0 || command[idx].numerical > 3)
+	{
+		LOG_ERROR("invalid category argument");
+		return false;
+	}
 	loc.category = (size_t)command[idx++].numerical;
 
 	if (command[idx].type != Argument::Type::Index)

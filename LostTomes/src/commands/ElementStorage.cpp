@@ -8,6 +8,8 @@
 #include "Helpers.h"
 #include "Parsing.h"
 
+#include "core/Profiler.h"
+
 
 static void addArticle(size_t cIndex, int eIndex, int aIndex)
 {

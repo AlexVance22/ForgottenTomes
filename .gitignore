@@ -5,6 +5,6 @@ bin-int/
 
 # Files
 *.user
-ForgottenTomes.sln
-ForgottenTomes/ForgottenTomes.vcxproj
-ForgottenTomes/ForgottenTomes.vcxproj.filters
+LostTomes.sln
+LostTomes/LostTomes.vcxproj
+LostTomes/LostTomes.vcxproj.filters

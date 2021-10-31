@@ -8,7 +8,7 @@
 #include "Parsing.h"
 
 
-static bool JsonFileEditLoc(const std::string& filepath, const std::string& key, ItemLocation loc)
+static bool StartupEditLoc(const std::string& filepath, const std::string& key, ItemLocation loc)
 {
 	std::ifstream istream("res/startup.json");
 	if (istream.is_open())
@@ -54,8 +54,10 @@ void viewCategory(size_t cIndex)
 		break;
 	}
 
-	for (size_t i = 0; i < File::Category(cIndex).size(); i++)
-		std::cout << i << ": " << File::Category(cIndex)[i].name << std::endl;
+	const auto& category = File::Category(cIndex);
+
+	for (size_t i = 0; i < category.size(); i++)
+		std::cout << i << ": " << category[i].name << '\n';
 
 	std::cout << "\n------------------------------------------\n\n";
 }
@@ -63,14 +65,14 @@ void viewCategory(size_t cIndex)
 void viewElement(size_t cIndex, int eIndex)
 {
 	const Element& e = File::Category(cIndex)[eIndex];
+	std::string pathbase = categoryPath(cIndex) + e.name + '/';
 	std::cout << "Name: " << e.name << '\n';
 
 	for (size_t i = 0; i < e.content.size(); i++)
 	{
 		std::cout << "\n------------------------------------------\n";
-		std::cout << i << " - " << e.content[i] << ":" << "\n\n";
-		std::string path = categoryPath(cIndex);
-		printFile(path + e.name + '/' + e.content[i] + ".txt");
+		std::cout << i << " - " << e.content[i] << ":\n\n";
+		printFile(pathbase + e.content[i] + ".txt");
 	}
 }
 
@@ -87,6 +89,12 @@ void viewArticle(size_t cIndex, int eIndex, int aIndex)
 
 void cmdList(const std::vector<Argument>& command)
 {
+	if (command.size() == 1)
+	{
+		LOG_ERROR("category argument required");
+		return;
+	}
+
 	std::cout << C_CYAN;
 	viewCategory((size_t)command[1].numerical);
 	std::cout << C_RESET;
@@ -133,7 +141,7 @@ bool cmdSelect(const std::vector<Argument>& command)
 		File::Get().selected.element = -1;
 		File::Get().selected.article = -2;
 
-		if (!JsonFileEditLoc("res/startup.json", "selected", ItemLocation()))
+		if (!StartupEditLoc("res/startup.json", "selected", ItemLocation()))
 			return false;
 
 		return true;
@@ -147,9 +155,9 @@ bool cmdSelect(const std::vector<Argument>& command)
 
 	std::cout << C_CYAN;
 	viewElement(loc.category, loc.element);
-	std::cout << "------------------------------------------\n\n" << C_RESET;
+	std::cout << "\n------------------------------------------\n\n" << C_RESET;
 
-	if (!JsonFileEditLoc("res/startup.json", "selected", loc))
+	if (!StartupEditLoc("res/startup.json", "selected", loc))
 		return false;
 
 	return true;
@@ -168,7 +176,7 @@ bool cmdView(const std::vector<Argument>& command)
 	else
 		viewArticle(loc.category, loc.element, loc.article);
 
-	std::cout << "\n------------------------------------------\n\n" << C_RESET;
+	std::cout << "\n\n------------------------------------------\n\n" << C_RESET;
 
 	return true;
 }

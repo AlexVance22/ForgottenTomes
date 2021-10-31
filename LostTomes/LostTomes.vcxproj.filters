@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="commands">
+      <UniqueIdentifier>{37C2D63F-238F-314B-4CA8-1FF338D466D9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{4E40957C-3A77-960D-E363-7C10CF79120F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="files">
+      <UniqueIdentifier>{3830700F-A444-98C0-6DC6-3B20D99994F1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="player">
+      <UniqueIdentifier>{9262FA14-7E04-25EB-67BF-383F5300AC3B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Helpers.h" />
+    <ClInclude Include="src\PCH.h" />
+    <ClInclude Include="src\Parsing.h" />
+    <ClInclude Include="src\commands\Editing.h">
+      <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\commands\ElementStorage.h">
+      <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\commands\FileManagement.h">
+      <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\commands\Find.h">
+      <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\commands\Help.h">
+      <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\commands\References.h">
+      <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\commands\Utilities.h">
+      <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Macros.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Profiler.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\files\CampaignElem.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\files\Dialogs.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\files\File.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\player\PlayerCharacter.h">
+      <Filter>player</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Helpers.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\PCH.cpp" />
+    <ClCompile Include="src\Parsing.cpp" />
+    <ClCompile Include="src\commands\Editing.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\commands\ElementStorage.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\commands\FileManagement.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\commands\Find.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\commands\Help.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\commands\References.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\commands\Utilities.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\Profiler.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\files\CampaignElem.cpp">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\files\Dialogs.cpp">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\files\File.cpp">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\player\PlayerCharacter.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -130,6 +130,10 @@ std::vector<Argument> getCommand()
 
 		GENERAL("*", Special, 1)
 		GENERAL("none", Special, 2)
+
+		default:
+			LOG_ERROR("unrecognised command or argument");
+			return {};
 		}
 
 		command.push_back(arg);

@@ -1,4 +1,4 @@
-workspace "ForgottenTomes"
+workspace "LostTomes"
 	architecture "x86"
 
 	configurations { "Debug", "Release" }
@@ -6,8 +6,8 @@ workspace "ForgottenTomes"
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 
-project "ForgottenTomes"
-	location "ForgottenTomes"
+project "LostTomes"
+	location "LostTomes"
 	kind "ConsoleApp"
 	language "C++"
 
@@ -15,7 +15,7 @@ project "ForgottenTomes"
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "PCH.h"
-	pchsource "ForgottenTomes/src/PCH.cpp"
+	pchsource "LostTomes/src/PCH.cpp"
 
 	files
 	{
@@ -26,7 +26,7 @@ project "ForgottenTomes"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"../ForgottenTomes/vendor"
+		"../LostTomes/vendor"
 	}
 
 	filter "system:windows"
@@ -36,13 +36,13 @@ project "ForgottenTomes"
 
 		defines
 		{
-			"FTOMES_PLATFORM_WINDOWS"
+			"LTOMES_PLATFORM_WINDOWS"
 		}
 
 	filter "configurations:Debug"
-		defines "FTOMES_DEBUG"
+		defines "LTOMES_DEBUG"
 		symbols "On"
 
 	filter "configurations:Release"
-		defines "FTOMES_RELEASE"
+		defines "LTOMES_RELEASE"
 		optimize "On"
