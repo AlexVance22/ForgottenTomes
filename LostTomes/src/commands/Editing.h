@@ -3,6 +3,6 @@
 struct Argument;
 
 
-bool cmdEdit(const std::vector<Argument>& command);
+void cmdEdit(const std::vector<Argument>& command);
 
-bool cmdRename(const std::vector<Argument>& command);
+void cmdRename(const std::vector<Argument>& command);

@@ -20,15 +20,15 @@ private:
 	File() {}
 
 public:
-	std::string rootdir;
-	std::string filepath;
+	fs::path rootdir;
+	fs::path filepath;
 
 	ItemLocation selected;
 
 	std::vector<Element> elements[4];
 
-	void save(const std::string& filepath);
-	bool load(const std::string& filepath);
+	void save(const fs::path& filepath);
+	void load(const fs::path& filepath);
 	void reset();
 
 	static File& Get();

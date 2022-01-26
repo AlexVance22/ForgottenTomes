@@ -3,9 +3,9 @@
 #include "Dialogs.h"
 
 
-#ifdef FTOMES_PLATFORM_WINDOWS
+#ifdef LTOMES_PLATFORM_WINDOWS
 
-std::string openFileName(const char* filter)
+fs::path openFileName(const char* filter)
 {
 	OPENFILENAMEA ofn;
 	CHAR szFile[260] = { 0 };
@@ -26,7 +26,7 @@ std::string openFileName(const char* filter)
 	return "";
 }
 
-std::string saveFileName(const char* filter)
+fs::path saveFileName(const char* filter)
 {
 	OPENFILENAMEA ofn;
 	CHAR szFile[260] = { 0 };

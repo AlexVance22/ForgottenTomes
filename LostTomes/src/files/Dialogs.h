@@ -1,6 +1,6 @@
 #pragma once
 
 
-std::string openFileName(const char* filter);
+fs::path openFileName(const char* filter);
 
-std::string saveFileName(const char* filter);
+fs::path saveFileName(const char* filter);

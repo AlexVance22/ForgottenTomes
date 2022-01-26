@@ -1,0 +1,234 @@
+{
+    "artificer": {
+        "hit-dice": 8,
+        "saving-throws": [ 2, 3 ],
+
+        "martial": false,
+        "caster-type": 1,
+
+        "tables": {
+            "features": []
+        }
+    },
+
+    "barbarian": {
+        "hit-dice": 12,
+        "saving-throws": [ 0, 2 ],
+
+        "martial": true,
+        "caster-type": 0,
+
+        "tables": {
+
+            "general": {
+
+                "features": [
+                    ["Rage", "Unarmored Defense"], ["Danger Sense", "Reckless Attack"], ["Primal Path"], ["Ability Score Improvement"], 
+                    ["Extra Attack", "Fast Movement"], ["Path feature"], ["Feral Instinct"], ["Ability Score Improvement"], ["Brutal Critical (1 die)"],
+                    ["Path feature"], ["Relentless Rage"], ["Ability Score Improvement"], ["Brutal Critical (2 dice)"], ["Path feature"], ["Persistent Rage"],
+                    ["Ability Score Improvement"], ["Brutal Critical (3 dice)"], ["Indomitable Might"], ["Ability Score Improvement"], ["Primal Champion"]
+                ]
+            },
+
+            "specifics": [
+                ["Rages", "acc", [2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, -1]],
+                ["Rage Modifier", "mod", [2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4]],
+                ["Brutal Critical dice", "other", [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]]
+            ]
+        }
+    },
+
+    "bard": {
+        "hit-dice": 8,
+        "saving-throws": [ 1, 5 ],
+
+        "martial": false,
+        "caster-type": 2,
+        "caster-ability": 5,
+
+        "tables": {
+
+            "general": {
+
+                "features": [
+                    ["Spellcasting", "Bardic Inspiration (d6)"], ["Jack of All Trades", "Song of Rest (d6)"], ["Bard College", "Expertise"], 
+                    ["Ability Score Improvement"], ["Bardic Inspiration (d8)"], ["Font of Inspiration"], ["Countercharm", "Bard College feature"],
+                    ["Ability Score Improvement"], ["Song of Rest (d8)"], ["Bardic Inspiration (dl0)", "Expertise", "Magical Secrets"], [], 
+                    ["Ability Score Improvement"], ["Song of Rest (d10)"], ["Magical Secrets", "Bard College feature"], ["Bardic Inspiration (d12)"],
+                    ["Ability Score Improvement"], ["Song of Rest (d12)"], ["Magical Secrets"], ["Ability Score Improvement"], ["Superior Inspiration"]
+                ],
+
+                "cantrip-count": [2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+                "spell-count": [4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 15, 16, 18, 19, 19, 20, 22, 22, 22],
+
+                "spell-slots": [
+                    [2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+                    [0, 0, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+                    [0, 0, 0, 0, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+                    [0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1]
+                ]
+            },
+            
+            "specifics": [
+                ["Inspiration die", "die", [6, 6, 6, 6, 8, 8, 8, 8, 8, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12]],
+                ["Song of Rest die", "die", [0, 6, 6, 6, 6, 6, 6, 6, 8, 8, 8, 8, 10, 10, 10, 10, 12, 12, 12, 12]]
+            ]
+        }
+    },
+
+    "blood-hunter": {
+        "hit-dice": 10,
+        "saving-throws": [ 1, 4 ],
+        
+        "martial": true,
+        "caster-type": 0,
+
+        "tables": {
+            "features": []
+        }
+    },
+
+    "cleric": {
+        "hit-dice": 8,
+        "saving-throws": [ 4, 5 ],
+
+        "martial": false,
+        "caster-type": 2,
+        "caster-ability": 4,
+
+        "tables": {
+            "features": []
+        }
+    },
+
+    "druid": {
+        "hit-dice": 8,
+        "saving-throws": [ 4, 5 ],
+
+        "martial": false,
+        "caster-type": 2,
+        "caster-ability": 4,
+
+        "tables": {
+            "features": []
+        }
+    },
+
+    "fighter": {
+        "hit-dice": 10,
+        "saving-throws": [ 0, 2 ],
+
+        "martial": true,
+        "caster-type": 0,
+
+        "tables": {
+            "features": []
+        }
+    },
+
+    "monk": {
+        "hit-dice": 8,
+        "saving-throws": [ 0, 1 ],
+
+        "martial": true,
+        "caster-type": 0,
+
+        "tables": {
+            "features": []
+        }
+    },
+
+    "mystic": {
+        "hit-dice": 8,
+        "saving-throws": [ 3, 4 ],
+
+        "martial": false,
+        "caster-type": 0,
+
+        "tables": {
+            "features": []
+        }
+    },
+
+    "paladin": {
+        "hit-dice": 10,
+        "saving-throws": [ 4, 5 ],
+
+        "martial": true,
+        "caster-type": 1,
+        "caster-ability": 5,
+
+        "tables": {
+            "features": []
+        }
+    },
+
+    "ranger": {
+        "hit-dice": 10,
+        "saving-throws": [ 0, 1 ],
+
+        "martial": true,
+        "caster-type": 1,
+        "caster-ability": 4,
+
+        "tables": {
+            "features": []
+        }
+    },
+
+    "rogue": {
+        "hit-dice": 8,
+        "saving-throws": [ 1, 3 ],
+
+        "martial": true,
+        "caster-type": 2,
+
+        "tables": {
+            "features": []
+        }
+    },
+
+    "sorcerer": {
+        "hit-dice": 6,
+        "saving-throws": [ 2, 5 ],
+
+        "martial": false,
+        "caster-type": 2,
+        "caster-ability": 5,
+
+        "tables": {
+            "features": []
+        }
+    },
+
+    "warlock": {
+        "hit-dice": 8,
+        "saving-throws": [ 4, 5 ],
+
+        "martial": false,
+        "caster-type": 3,
+        "caster-ability": 5,
+
+        "tables": {
+            "features": []
+        }
+    },
+
+    "wizard": {
+        "hit-dice": 6,
+        "saving-throws": [ 3, 4 ],
+
+        "martial": false,
+        "caster-type": 2,
+        "caster-ability": 3,
+
+        "tables": {
+            "features": []
+        }
+    }
+}

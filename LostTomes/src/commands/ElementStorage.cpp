@@ -1,6 +1,7 @@
 #include "PCH.h"
 #include "ElementStorage.h"
 
+#include "core/Exceptions.h"
 #include "core/Macros.h"
 #include "files/File.h"
 
@@ -11,104 +12,90 @@
 #include "core/Profiler.h"
 
 
-static void addArticle(size_t cIndex, int eIndex, int aIndex)
+static void addArticle(const ItemLocation& loc)
 {
-	std::string path = categoryPath(cIndex);
-	Element& e = File::Category(cIndex)[eIndex];
-	path += e.name + '/';
+	Element& e = File::Element(loc);
+	fs::path path = categoryPath(loc.category) / e.name;
 
-	if (aIndex == -1)
-		aIndex = e.content.size();
+	const auto article = (loc.article == -1) ? e.content.size() - 1 : loc.article;
 
-	std::string name = e.content.size() == 0 ? "Brief" : "Article_" + std::to_string(e.content.size());
-	e.content.emplace(e.content.begin() + aIndex, name);
-	path += e.content[aIndex] + ".txt";
+	const std::string name = e.content.size() == 0 ? "Brief" : "Article_" + std::to_string(e.content.size());
+	e.content.emplace(e.content.begin() + article, name);
+	path /= e.content[article] + ".txt";
 
 	std::cout << C_GREEN;
-	viewElement(cIndex, eIndex);
+	viewElement(loc);
 	std::cout << C_RESET << '\n';
 
 	std::ofstream stream(path);
 }
 
-static void delArticle(size_t cIndex, int eIndex, int aIndex)
+static void delArticle(const ItemLocation& loc)
 {
-	std::string path = categoryPath(cIndex);
-	Element& e = File::Category(cIndex)[eIndex];
+	Element& e = File::Element(loc);
 
-	if (aIndex == -1)
-		aIndex = e.content.size() - 1;
+	const auto article = (loc.article == -1) ? e.content.size() - 1 : loc.article;
 
-	path += e.name + "/" + e.content[aIndex] + ".txt";
-	e.content.erase(e.content.begin() + aIndex);
+	const fs::path path = categoryPath(loc.article) / e.name / (e.content[article] + ".txt");
+	e.content.erase(e.content.begin() + article);
 
 	std::cout << C_RED;
-	viewElement(cIndex, eIndex);
+	viewElement(loc);
 	std::cout << C_RESET << '\n';
 
-	std::remove(path.c_str());
+	std::remove(path.generic_string().c_str());
 }
 
 
-static void addElement(size_t cIndex, int eIndex)
+static void addElement(const ItemLocation& loc)
 {
-	std::string path = categoryPath(cIndex);
-	auto& category = File::Category(cIndex);
+	const fs::path path = categoryPath(loc.category);
+	auto& category = File::Category(loc.category);
 
-	if (eIndex == -1)
-		eIndex = category.size();
+	auto element = (loc.element == -1) ? category.size() : loc.element;
 
-	Element& e = *category.emplace(category.begin() + eIndex, cIndex, category.size());
+	Element& e = *category.emplace(category.begin() + loc.element, loc.category, category.size());
 	e.content.emplace_back("Brief");
 
-	std::filesystem::create_directories(path + e.name);
-	std::ofstream stream(path + e.name + "/Brief.txt");
+	std::filesystem::create_directories(path / e.name);
+	std::ofstream stream(path / e.name / "Brief.txt");
 
 	std::cout << C_GREEN;
-	viewCategory(cIndex);
+	viewCategory(loc);
 	std::cout << C_RESET;
 }
 
-static void delElement(size_t cIndex, int eIndex)
+static void delElement(const ItemLocation& loc)
 {
-	auto& category = File::Category(cIndex);
+	auto& category = File::Category(loc.category);
 
-	if (eIndex == -1)
-		eIndex = category.size() - 1;
+	const auto element = (loc.element == -1) ? category.size() - 1 : loc.element;
 
-	std::filesystem::remove_all(categoryPath(cIndex) + category[eIndex].name);
-	category.erase(category.begin() + eIndex);
+	std::filesystem::remove_all(categoryPath(loc.category) / category[element].name);
+	category.erase(category.begin() + element);
 
 	std::cout << C_RED;
-	viewCategory(cIndex);
+	viewCategory(loc);
 	std::cout << C_RESET;
 }
 
 
-bool cmdAdd(const std::vector<Argument>& command)
+void cmdAdd(const std::vector<Argument>& command)
 {
-	ItemLocation loc;
-	if (!parseLocStr(loc, command, 1))
-		return false;
+	const ItemLocation loc = parseLocStr(command, 1);
 
 	if (loc.article == -2)
-		addElement(loc.category, loc.element);
+		addElement(loc);
 	else
-		addArticle(loc.category, loc.element, loc.article);
-
-	return true;
+		addArticle(loc);
 }
 
-bool cmdDel(const std::vector<Argument>& command)
+void cmdDel(const std::vector<Argument>& command)
 {
-	ItemLocation loc;
-	if (!parseLocStr(loc, command, 1))
-		return false;
+	const ItemLocation loc = parseLocStr(command, 1);
 
 	if (loc.article == -2)
-		delElement(loc.category, loc.element);
+		delElement(loc);
 	else
-		delArticle(loc.category, loc.element, loc.article);
-
-	return true;
+		delArticle(loc);
 }

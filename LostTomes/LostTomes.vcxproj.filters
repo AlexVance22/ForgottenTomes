@@ -57,6 +57,7 @@
     <ClInclude Include="src\player\PlayerCharacter.h">
       <Filter>player</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\Exceptions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Helpers.cpp" />
@@ -99,5 +100,6 @@
     <ClCompile Include="src\player\PlayerCharacter.cpp">
       <Filter>player</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\Exceptions.cpp" />
   </ItemGroup>
 </Project>

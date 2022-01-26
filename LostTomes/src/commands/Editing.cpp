@@ -8,9 +8,9 @@
 #include "Parsing.h"
 
 
-static void valueElement(size_t cIndex, int eIndex)
+static void valueElement(const ItemLocation& loc)
 {
-	int rel = (int)File::Category(cIndex)[eIndex].relevance;
+	const int rel = (int)File::Category(loc.category)[loc.element].relevance;
 
 	std::cout << C_YELLOW << "Old: ";
 		
@@ -35,67 +35,57 @@ static void valueElement(size_t cIndex, int eIndex)
 	std::cin.ignore(0);
 	std::getline(std::cin, relstr);
 
-	File::Category(cIndex)[eIndex].relevance = (Element::Relevance)std::stoi(relstr);
+	File::Element(loc).relevance = (Element::Relevance)std::stoi(relstr);
 }
 
-static void renameElement(size_t cIndex, int eIndex)
+static void renameElement(const ItemLocation& loc)
 {
-	std::string path = categoryPath(cIndex);
+	const fs::path path = categoryPath(loc.category);
 
-	std::cout << C_YELLOW << "Old: " << File::Category(cIndex)[eIndex].name << C_RESET << "\nNew: ";
+	std::cout << C_YELLOW << "Old: " << File::Element(loc).name << C_RESET << "\nNew: ";
 	std::cin.ignore(0);
 	std::string name;
 	std::getline(std::cin, name);
 
-	std::filesystem::rename(path + File::Category(cIndex)[eIndex].name, path + name);
-	File::Category(cIndex)[eIndex].name = name;
+	std::filesystem::rename(path / File::Element(loc).name, path / name);
+	File::Element(loc).name = name;
 }
 
-static void renameArticle(size_t cIndex, int eIndex, int aIndex)
+static void renameArticle(const ItemLocation& loc)
 {
-	std::string path = categoryPath(cIndex);
-	path += File::Category(cIndex)[eIndex].name + '/';
+	const fs::path path = categoryPath(loc.category) / File::Element(loc).name;
 
-	std::cout << C_YELLOW << "Old: " << File::Article({ cIndex, eIndex, aIndex }) << C_RESET << "\nNew: ";
+	std::cout << C_YELLOW << "Old: " << File::Article(loc) << C_RESET << "\nNew: ";
 	std::cin.ignore(0);
 	std::string name;
 	std::getline(std::cin, name);
 
-	std::filesystem::rename(path + File::Article({ cIndex, eIndex, aIndex }) + ".txt", path + name + ".txt");
-	File::Category(cIndex)[eIndex].content[aIndex] = name;
+	std::filesystem::rename(path / (File::Article(loc) + ".txt"), path / (name + ".txt"));
+	File::Element(loc).content[loc.article] = name;
 }
 
 
-bool cmdEdit(const std::vector<Argument>& command)
+void cmdEdit(const std::vector<Argument>& command)
 {
-	ItemLocation loc;
-	if (!parseLocStr(loc, command, 1))
-		return false;
+	const ItemLocation loc = parseLocStr(command, 1);
 
 	if (command[command.size() - 1].numerical == "relevance"_hash)
 	{
-		valueElement(loc.category, loc.element);
-		return true;
+		valueElement(loc);
+		return;
 	}
 
-	std::string path = '\"' + categoryPath(loc.category);
-	path += File::Element(loc).name + '/' + File::Article(loc) + ".txt\"";
+	const fs::path path = categoryPath(loc.category) / File::Element(loc).name / (File::Article(loc) + ".txt");
 
-	system(path.c_str());
-
-	return true;
+	system(("\"" + path.generic_string() + "\"").c_str());
 }
 
-bool cmdRename(const std::vector<Argument>& command)
+void cmdRename(const std::vector<Argument>& command)
 {
-	ItemLocation loc;
-	if (!parseLocStr(loc, command, 1))
-		return false;
+	const ItemLocation loc = parseLocStr(command, 1);
 
 	if (loc.article == -2)
-		renameElement(loc.category, loc.element);
+		renameElement(loc);
 	else
-		renameArticle(loc.category, loc.element, loc.article);
-
-	return true;
+		renameArticle(loc);
 }

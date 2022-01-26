@@ -26,7 +26,7 @@ project "LostTomes"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"../LostTomes/vendor"
+		"vendor"
 	}
 
 	filter "system:windows"

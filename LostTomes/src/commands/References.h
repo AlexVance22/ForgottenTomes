@@ -3,4 +3,4 @@
 struct Argument;
 
 
-bool cmdLookup(const std::vector<Argument>& command);
+void cmdLookup(const std::vector<Argument>& command);

@@ -1,17 +1,18 @@
 #pragma once
 
 struct Argument;
+struct ItemLocation;
 
 
-void viewCategory(size_t cIndex);
+void viewCategory(const ItemLocation& loc);
 
-void viewElement(size_t cIndex, int eIndex);
+void viewElement(const ItemLocation& loc);
 
-void viewArticle(size_t cIndex, int eIndex, int aIndex);
+void viewArticle(const ItemLocation& loc);
 
 
 void cmdList(const std::vector<Argument>& command);
 
-bool cmdSelect(const std::vector<Argument>& command);
+void cmdSelect(const std::vector<Argument>& command);
 
-bool cmdView(const std::vector<Argument>& command);
+void cmdView(const std::vector<Argument>& command);

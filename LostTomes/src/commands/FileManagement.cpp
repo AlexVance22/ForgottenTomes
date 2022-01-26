@@ -1,48 +1,26 @@
 #include "PCH.h"
 #include "FileManagement.h"
 
+#include "core/Exceptions.h"
 #include "core/Macros.h"
 #include "files/File.h"
 
 #include "Files/Dialogs.h"
 
 
-template<typename Ty>
-static bool StartupChangeVal(const std::string& filepath, const std::string& key, const Ty& val)
+void cmdCreate()
 {
-	std::ifstream istream("res/startup.json");
-	if (istream.is_open())
-	{
-		nlohmann::json j;
-		istream >> j;
-		istream.close();
-		j[key] = val;
+	const fs::path rootdir = saveFileName("");
 
-		std::ofstream ostream("res/startup.json", std::ios::trunc);
-		if (ostream.is_open())
-		{
-			ostream << j;
-			ostream.close();
-			return true;
-		}
-	}
-	return false;
-}
+	fs::create_directories(rootdir / "sessions");
+	fs::create_directories(rootdir / "locations");
+	fs::create_directories(rootdir / "characters");
+	fs::create_directories(rootdir / "items");
 
-
-bool cmdCreate()
-{
-	std::string rootdir = saveFileName("");
-	std::replace(rootdir.begin(), rootdir.end(), '\\', '/');
-
-	std::filesystem::create_directories(rootdir);
-	std::filesystem::create_directories(rootdir + "/sessions");
-	std::filesystem::create_directories(rootdir + "/locations");
-	std::filesystem::create_directories(rootdir + "/characters");
-	std::filesystem::create_directories(rootdir + "/items");
-
-	std::string filepath = rootdir + "/camp.ft";
+	const fs::path filepath = rootdir / "camp.ft";
 	std::ofstream stream(filepath);
+	if (!stream.is_open())
+		throw FileNotFound("unable to create file at specified location");
 	stream << "{\"sessions\":[],\"locations\":[],\"characters\":[],\"items\":[]}";
 	stream.close();
 
@@ -50,34 +28,49 @@ bool cmdCreate()
 	File::Get().rootdir = rootdir;
 	File::Get().filepath = filepath;
 
-	if (!StartupChangeVal("res/startup.json", "lastfile", filepath))
-	{
-		LOG_ERROR("startup file missing");
-		return false;
-	}
+	std::ifstream istream("res/startup.json");
+	if (!istream.is_open())
+		throw FileNotFound("unable to open startup file");
 
-	return true;
+	nlohmann::json j;
+	istream >> j;
+	istream.close();
+	j["lastfile"] = filepath;
+
+	std::ofstream ostream("res/startup.json");
+	if (!ostream.is_open())
+		throw FileNotFound("unable to open startup file");
+
+	ostream << j;
+	ostream.close();
 }
 
-bool cmdOpen()
+void cmdOpen()
 {
-	std::string filepath = openFileName("tome files (*.ft)\0*.ft\0");
-	std::replace(filepath.begin(), filepath.end(), '\\', '/');
+	const fs::path filepath = openFileName("tome files (*.ft)\0*.ft\0");
 
 	File::Get().reset();
-	if (!File::Get().load(filepath))
+	File::Get().load(filepath);
 	{
-		LOG_ERROR("failed to open file at specified location");
-		return false;
+		//LOG_ERROR("failed to open file at specified location");
+		//return false;
 	}
 
-	if (!StartupChangeVal("res/startup.json", "lastfile", filepath))
-	{
-		LOG_ERROR("startup file missing");
-		return false;
-	}
+	std::ifstream istream("res/startup.json");
+	if (!istream.is_open())
+		throw FileNotFound("unable to open startup file");
 
-	return true;
+	nlohmann::json j;
+	istream >> j;
+	istream.close();
+	j["lastfile"] = filepath;
+
+	std::ofstream ostream("res/startup.json");
+	if (!ostream.is_open())
+		throw FileNotFound("unable to open startup file");
+
+	ostream << j;
+	ostream.close();
 }
 
 void cmdSave()
@@ -89,14 +82,20 @@ void cmdClose()
 {
 	File::Get().reset();
 
-	if (!StartupChangeVal("res/startup.json", "lastfile", "empty"))
-	{
-		LOG_ERROR("startup file missing");
-		return;
-	}
-	if (!StartupChangeVal("res/startup.json", "selected", nullptr))
-	{
-		LOG_ERROR("startup file missing");
-		return;
-	}
+	std::ifstream istream("res/startup.json");
+	if (!istream.is_open())
+		throw FileNotFound("unable to open startup file");
+
+	nlohmann::json j;
+	istream >> j;
+	istream.close();
+	j["lastfile"] = "empty";
+	j["selected"] = nullptr;
+
+	std::ofstream ostream("res/startup.json");
+	if (!ostream.is_open())
+		throw FileNotFound("unable to open startup file");
+
+	ostream << j;
+	ostream.close();
 }

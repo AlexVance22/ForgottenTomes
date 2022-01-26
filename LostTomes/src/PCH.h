@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <algorithm>
+#include <exception>
 #include <optional>
 #include <chrono>
 
@@ -13,8 +14,13 @@
 #include <string>
 #include <array>
 
-#ifdef FTOMES_PLATFORM_WINDOWS
+#include <cstdlib>
+#include <cmath>
+
+#ifdef LTOMES_PLATFORM_WINDOWS
 	#include <windows.h>
 #endif
 
 #include <json.hpp>
+
+namespace fs = std::filesystem;

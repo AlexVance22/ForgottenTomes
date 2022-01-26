@@ -10,7 +10,7 @@
 #include "Utilities.h"
 
 
-static std::vector<std::string> collectRefNames(const std::string& filepath)
+static std::vector<std::string> collectRefNames(const fs::path& filepath)
 {
 	std::ifstream stream(filepath);
 	if (!stream.is_open())
@@ -80,25 +80,25 @@ static std::vector<std::pair<std::string, ItemLocation>> findRefs(const std::vec
 }
 
 
-bool cmdLookup(const std::vector<Argument>& command)
+void cmdLookup(const std::vector<Argument>& command)
 {
-	ItemLocation loc;
-	if (!parseLocStr(loc, command, 1))
-		return false;
+	const ItemLocation loc = parseLocStr(command, 1);
 
-	std::string path = categoryPath(loc.category);
-	path += File::Element(loc).name + '/' + File::Article(loc);
+	const fs::path path = categoryPath(loc.category) / File::Element(loc).name / (File::Article(loc) + ".txt");
 
-	std::vector<std::string> refTokens = collectRefNames(path + ".txt");
-	std::vector<std::pair<std::string, ItemLocation>> refLocs = findRefs(refTokens);
+	const std::vector<std::string> refTokens = collectRefNames(path);
+	const std::vector<std::pair<std::string, ItemLocation>> refLocs = findRefs(refTokens);
 
 	std::cout << C_CYAN;
-	printFile(path + ".txt");
+	printFile(path);
 	std::cout << C_RESET << '\n';
 
 	for (size_t i = 0; i < refTokens.size(); i++)
 	{
-		auto it = std::find_if(refLocs.begin(), refLocs.end(), [&](const std::pair<std::string, ItemLocation>& pair) { return pair.first == refTokens[i]; });
+		auto it = std::find_if(refLocs.begin(), refLocs.end(), [&refTokens, i](const std::pair<std::string, ItemLocation>& pair)
+		{
+			return pair.first == refTokens[i];
+		});
 
 		if (it != refLocs.end())
 			std::cout << i << ": " << it->first << '\n';
@@ -118,11 +118,14 @@ bool cmdLookup(const std::vector<Argument>& command)
 		if (index == "exit")
 		{
 			std::cout << '\n';
-			return true;
+			return;
 		}
 		int i = stoi(index);
 
-		auto it = std::find_if(refLocs.begin(), refLocs.end(), [&](const std::pair<std::string, ItemLocation>& pair) { return pair.first == refTokens[i]; });
+		const auto it = std::find_if(refLocs.begin(), refLocs.end(), [&refTokens, i](const std::pair<std::string, ItemLocation>& pair)
+		{
+			return pair.first == refTokens[i];
+		});
 
 		if (it != refLocs.end())
 		{
@@ -130,14 +133,12 @@ bool cmdLookup(const std::vector<Argument>& command)
 			File::Get().selected = it->second;
 			system("CLS");
 			std::cout << C_CYAN;
-			ItemLocation sel = it->second;
-			viewElement(sel.category, sel.element);
+			const ItemLocation sel = it->second;
+			viewElement(sel);
 			std::cout << "\n-------------------------------------------\n\n" << C_RESET;
-			return true;
+			return;
 		}
-		else
-			std::cout << C_RED << "\nElement is not implemented\n\n" << C_RESET;
+		
+		std::cout << C_RED << "\nElement is not implemented\n\n" << C_RESET;
 	}
-	
-	return true;
 }

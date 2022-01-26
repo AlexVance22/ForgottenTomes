@@ -12,7 +12,7 @@ struct Accumulable
 	void operator+=(uint32_t amount) { current = min(current + amount, maximum); }
 
 	void operator--() { current -= (current > 0); }
-	void operator-=(uint32_t amount) { current = max((int)current - amount, 0); }
+	void operator-=(uint32_t amount) { current = max(current - amount, 0); }
 
 	Accumulable(uint32_t _max) : maximum(_max), current(_max) { }
 };

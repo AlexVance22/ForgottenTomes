@@ -6,8 +6,8 @@
 struct Argument;
 
 
-bool parseLocStr(ItemLocation& loc, const std::vector<Argument>& command, size_t idx);
+ItemLocation parseLocStr(const std::vector<Argument>& command, size_t idx);
 
-std::string categoryPath(size_t cIndex);
+const fs::path categoryPath(size_t cIndex) noexcept;
 
-void printFile(const std::string& filepath);
+void printFile(const fs::path& filepath);

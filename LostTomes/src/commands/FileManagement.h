@@ -1,9 +1,9 @@
 #pragma once
 
 
-bool cmdCreate();
+void cmdCreate();
 
-bool cmdOpen();
+void cmdOpen();
 
 void cmdSave();
 

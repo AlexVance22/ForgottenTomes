@@ -1,6 +1,7 @@
 #include "PCH.h"
 #include "Help.h"
 
+#include "core/Exceptions.h"
 #include "core/Macros.h"
 
 #include "Parsing.h"
@@ -95,7 +96,6 @@ void cmdHelp(const std::vector<Argument>& command)
 	case "close"_hash:
 		break;
 	default:
-		LOG_ERROR("unrecognised command");
-		break;
+		throw InvalidArgument("unrecognised command");
 	}
 }

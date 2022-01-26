@@ -1,6 +1,7 @@
 #include "PCH.h"
 #include "Utilities.h"
 
+#include "core/Exceptions.h"
 #include "core/Macros.h"
 #include "files/File.h"
 
@@ -8,37 +9,9 @@
 #include "Parsing.h"
 
 
-static bool StartupEditLoc(const std::string& filepath, const std::string& key, ItemLocation loc)
+void viewCategory(const ItemLocation& loc)
 {
-	std::ifstream istream("res/startup.json");
-	if (istream.is_open())
-	{
-		nlohmann::json j;
-		istream >> j;
-		istream.close();
-		if (loc.element == -1)
-			j[key] = nullptr;
-		else
-		{
-			j[key]["category"] = loc.category;
-			j[key]["element"] = loc.element;
-		}
-
-		std::ofstream ostream("res/startup.json", std::ios::trunc);
-		if (ostream.is_open())
-		{
-			ostream << j;
-			ostream.close();
-			return true;
-		}
-	}
-	return false;
-}
-
-
-void viewCategory(size_t cIndex)
-{
-	switch (cIndex)
+	switch (loc.category)
 	{
 	case 0:
 		std::cout << "Sessions----------------------------------\n\n";
@@ -54,7 +27,7 @@ void viewCategory(size_t cIndex)
 		break;
 	}
 
-	const auto& category = File::Category(cIndex);
+	const auto& category = File::Category(loc.category);
 
 	for (size_t i = 0; i < category.size(); i++)
 		std::cout << i << ": " << category[i].name << '\n';
@@ -62,49 +35,46 @@ void viewCategory(size_t cIndex)
 	std::cout << "\n------------------------------------------\n\n";
 }
 
-void viewElement(size_t cIndex, int eIndex)
+void viewElement(const ItemLocation& loc)
 {
-	const Element& e = File::Category(cIndex)[eIndex];
-	std::string pathbase = categoryPath(cIndex) + e.name + '/';
+	const Element& e = File::Element(loc);
+	const fs::path pathbase = categoryPath(loc.category) / e.name;
 	std::cout << "Name: " << e.name << '\n';
 
 	for (size_t i = 0; i < e.content.size(); i++)
 	{
 		std::cout << "\n------------------------------------------\n";
 		std::cout << i << " - " << e.content[i] << ":\n\n";
-		printFile(pathbase + e.content[i] + ".txt");
+		printFile(pathbase / (e.content[i] + ".txt"));
 	}
 }
 
-void viewArticle(size_t cIndex, int eIndex, int aIndex)
+void viewArticle(const ItemLocation& loc)
 {
-	const Element& e = File::Category(cIndex)[eIndex];
+	const Element& e = File::Element(loc);
 
-	std::cout << e.name + " article " << aIndex << ":\n\n";
-	std::cout << e.content[aIndex] + "\n\n";
-	std::string path = categoryPath(cIndex);
-	printFile(path + e.name + '/' + e.content[aIndex] + ".txt");
+	std::cout << e.name + " article " << loc.article << ":\n\n";
+	std::cout << e.content[loc.article] + "\n\n";
+	fs::path path = categoryPath(loc.article);
+	printFile(path / e.name / (e.content[loc.article] + ".txt"));
 }
 
 
 void cmdList(const std::vector<Argument>& command)
 {
 	if (command.size() == 1)
-	{
-		LOG_ERROR("category argument required");
-		return;
-	}
+		throw InvalidCategory("category argument required");
 
 	std::cout << C_CYAN;
-	viewCategory((size_t)command[1].numerical);
+	viewCategory({ (size_t)command[1].numerical, 0, 0 });
 	std::cout << C_RESET;
 }
 
-bool cmdSelect(const std::vector<Argument>& command)
+void cmdSelect(const std::vector<Argument>& command)
 {
 	if (command.size() == 1)
 	{
-		auto sel = File::Selected();
+		const auto sel = File::Selected();
 		if (sel)
 		{
 			switch (sel.value().category)
@@ -127,56 +97,78 @@ bool cmdSelect(const std::vector<Argument>& command)
 		else
 			std::cout << "No element selected\n\n";
 
-		return true;
+		return;
 	}
 
 	if (command.size() == 2)
 	{
 		if (command[1].type != Argument::Type::Special && command[1].numerical != 2)
-		{
-			LOG_ERROR("location not found");
-			return false;
-		}
+			throw InvalidArgument("location not found");
+	
 		File::Get().selected.category = 4;
 		File::Get().selected.element = -1;
 		File::Get().selected.article = -2;
 
-		if (!StartupEditLoc("res/startup.json", "selected", ItemLocation()))
-			return false;
+		std::ifstream istream("res/startup.json");
+		if (!istream.is_open())
+			throw FileNotFound("unable to open startup file");
 
-		return true;
+		nlohmann::json j;
+		istream >> j;
+		istream.close();
+		j["selected"] = nullptr;
+
+		std::ofstream ostream("res/startup.json", std::ios::trunc);
+		if (!ostream.is_open())
+			throw FileNotFound("unable to open startup file");
+
+		ostream << j;
+		ostream.close();
+
+		return;
 	}
 
-	ItemLocation loc;
-	if (!parseLocStr(loc, command, 1))
-		return false;
+	const ItemLocation loc = parseLocStr(command, 1);
 
 	File::Get().selected = loc;
 
 	std::cout << C_CYAN;
-	viewElement(loc.category, loc.element);
+	viewElement(loc);
 	std::cout << "\n------------------------------------------\n\n" << C_RESET;
 
-	if (!StartupEditLoc("res/startup.json", "selected", loc))
-		return false;
+	std::ifstream istream("res/startup.json");
+	if (!istream.is_open())
+		throw FileNotFound("unable to open startup file");
 
-	return true;
+	nlohmann::json j;
+	istream >> j;
+	istream.close();
+	if (loc.element == -1)
+		j["selected"] = nullptr;
+	else
+	{
+		j["selected"]["category"] = loc.category;
+		j["selected"]["element"] = loc.element;
+	}
+
+	std::ofstream ostream("res/startup.json", std::ios::trunc);
+	if (!ostream.is_open())
+		throw FileNotFound("unable to open startup file");
+
+	ostream << j;
+	ostream.close();
 }
 
-bool cmdView(const std::vector<Argument>& command)
+void cmdView(const std::vector<Argument>& command)
 {
-	ItemLocation loc;
-	if (!parseLocStr(loc, command, 1))
-		return false;
+	const ItemLocation loc = parseLocStr(command, 1);
 
 	std::cout << C_CYAN;
 
 	if (loc.article == -2)
-		viewElement(loc.category, loc.element);
+		viewElement(loc);
 	else
-		viewArticle(loc.category, loc.element, loc.article);
+		viewArticle(loc);
 
 	std::cout << "\n\n------------------------------------------\n\n" << C_RESET;
-
-	return true;
 }
